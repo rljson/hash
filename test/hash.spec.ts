@@ -6,14 +6,15 @@
 
 import { beforeEach, expect, suite, test } from 'vitest';
 
+import { Json } from '../src';
 import { defaultApplyConfig } from '../src/apply-config';
-import { Hash } from '../src/hash';
+import { JsonHash } from '../src/hash';
 
 suite('Hash', () => {
-  let jh = Hash.default;
+  let jh = JsonHash.default;
 
   beforeEach(() => {
-    jh = new Hash();
+    jh = new JsonHash();
   });
 
   suite('apply(json)', () => {
@@ -87,16 +88,18 @@ suite('Hash', () => {
         });
 
         suite('containing three key value pairs', () => {
-          const json0 = {
+          const json0: Json = {
             a: 'value',
             b: 1.0,
             c: true,
+            _hash: '',
           };
 
-          const json1 = {
+          const json1: Json = {
             b: 1.0,
             a: 'value',
             c: true,
+            _hash: '',
           };
 
           let j0: Json;
@@ -313,9 +316,9 @@ suite('Hash', () => {
       suite('when ApplyConfig.updateExistingHashes is set to true', () => {
         const allHashesChanged = (json: Json) => {
           return (
-            json['a']['_hash'] !== 'hash_a' &&
-            json['a']['b']['_hash'] !== 'hash_b' &&
-            json['a']['b']['c']['_hash'] !== 'hash_c'
+            json['a']!['_hash'] !== 'hash_a' &&
+            json['a']!['b']['_hash'] !== 'hash_b' &&
+            json['a']!['b']['c']['_hash'] !== 'hash_c'
           );
         };
 
@@ -324,7 +327,7 @@ suite('Hash', () => {
         ac.throwOnWrongHashes = false;
 
         test('should recalculate existing hashes', () => {
-          const json = {
+          const json: any = {
             a: {
               _hash: 'hash_a',
               b: {
@@ -357,10 +360,11 @@ suite('Hash', () => {
         const ac = defaultApplyConfig();
         ac.inPlace = true;
 
-        let json: Json = {};
+        let json: any = {};
 
         beforeEach(() => {
           json = {
+            _hash: '',
             a: {
               _hash: 'hash_a',
               b: {
@@ -822,7 +826,7 @@ suite('Hash', () => {
   });
 
   suite('copyJson', () => {
-    const copyJson = Hash.copyJson;
+    const copyJson = JsonHash.copyJson;
 
     test('empty json', () => {
       expect(copyJson({})).toEqual({});
@@ -904,7 +908,7 @@ suite('Hash', () => {
   });
 
   suite('isBasicType', () => {
-    const isBasicType = Hash.isBasicType;
+    const isBasicType = JsonHash.isBasicType;
 
     test('returns true if type is a basic type', () => {
       expect(isBasicType(1)).toEqual(true);
@@ -917,7 +921,7 @@ suite('Hash', () => {
   });
 
   suite('jsonString(map)', () => {
-    const jsonString = Hash.jsonString;
+    const jsonString = JsonHash.jsonString;
 
     test('converts a map into a json string', () => {
       expect(jsonString({ a: 1 })).toEqual('{"a":1}');
