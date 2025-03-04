@@ -4,24 +4,24 @@
 // Use of this source code is governed by terms that can be
 // found in the LICENSE file in the root of this package.
 
-import { beforeEach, expect, suite, test } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { Json } from '../src';
 import { defaultApplyConfig } from '../src/apply-config';
 import { Hash } from '../src/hash';
 
-suite('Hash', () => {
+describe('Hash', () => {
   let jh = Hash.default;
 
   beforeEach(() => {
     jh = new Hash();
   });
 
-  suite('apply(json)', () => {
-    suite('adds correct hashes to', () => {
-      suite('simple json', () => {
-        suite('containing only one key value pair', () => {
-          test('with a string value', () => {
+  describe('apply(json)', () => {
+    describe('adds correct hashes to', () => {
+      describe('simple json', () => {
+        describe('containing only one key value pair', () => {
+          it('with a string value', () => {
             const json = jh.apply({ key: 'value', _hash: '' });
             expect(json.key).toEqual('value');
             const expectedHash = jh.calcHash('{"key":"value"}');
@@ -29,7 +29,7 @@ suite('Hash', () => {
             expect(json._hash).toEqual('5Dq88zdSRIOcAS-WM_lYYt');
           });
 
-          test('with a int value', () => {
+          it('with a int value', () => {
             const json = jh.apply({ key: 1, _hash: '' });
             expect(json.key).toEqual(1);
             const expectedHash = jh.calcHash('{"key":1}');
@@ -37,7 +37,7 @@ suite('Hash', () => {
             expect(json._hash).toEqual('t4HVsGBJblqznOBwy6IeLt');
           });
 
-          test('with a double value without commas', () => {
+          it('with a double value without commas', () => {
             const json = jh.apply({ key: 1.0, _hash: '' });
             expect(json.key).toEqual(1);
             const expectedHash = jh.calcHash('{"key":1}');
@@ -45,7 +45,7 @@ suite('Hash', () => {
             expect(json._hash).toEqual('t4HVsGBJblqznOBwy6IeLt');
           });
 
-          test('with a bool value', () => {
+          it('with a bool value', () => {
             const json = jh.apply({ key: true, _hash: '' });
             expect(json.key).toEqual(true);
             const expectedHash = jh.calcHash('{"key":true}');
@@ -53,7 +53,7 @@ suite('Hash', () => {
             expect(json._hash).toEqual('dNkCrIe79x2dPyf5fywwYO');
           });
 
-          test('with a null value', () => {
+          it('with a null value', () => {
             const json = jh.apply({ key: null, _hash: '' });
             expect(json.key).toEqual(null);
             const expectedHash = jh.calcHash('{"key":null}');
@@ -61,7 +61,7 @@ suite('Hash', () => {
             expect(json._hash).toEqual('BZwS6bAVtKxSW0AW5y8ANk');
           });
 
-          test('with an array with null values', () => {
+          it('with an array with null values', () => {
             const json = jh.apply({ key: [1, 2, null, 3], _hash: '' });
             expect(json.key).toEqual([1, 2, null, 3]);
             const expectedHash = jh.calcHash('{"key":[1,2,null,3]}');
@@ -70,7 +70,7 @@ suite('Hash', () => {
           });
         });
 
-        test('existing _hash should be overwritten', () => {
+        it('existing _hash should be overwritten', () => {
           const ac = defaultApplyConfig();
           ac.throwOnWrongHashes = false;
 
@@ -87,7 +87,7 @@ suite('Hash', () => {
           expect(json._hash).toEqual('5Dq88zdSRIOcAS-WM_lYYt');
         });
 
-        suite('containing three key value pairs', () => {
+        describe('containing three key value pairs', () => {
           const json0: Json = {
             a: 'value',
             b: 1.0,
@@ -111,14 +111,14 @@ suite('Hash', () => {
             j1 = jh.apply(json1);
           });
 
-          test('should create a string of key value pairs and hash it', () => {
+          it('should create a string of key value pairs and hash it', () => {
             const expectedHash = jh.calcHash('{"a":"value","b":1,"c":true}');
 
             expect(j0._hash).toEqual(expectedHash);
             expect(j1._hash).toEqual(expectedHash);
           });
 
-          test('should sort work independent of key order', () => {
+          it('should sort work independent of key order', () => {
             expect(j0).toEqual(j1);
             expect(j0._hash).toEqual(j1._hash);
             expect(true.toString()).toEqual('true');
@@ -126,8 +126,8 @@ suite('Hash', () => {
         });
       });
 
-      suite('nested json', () => {
-        test('of level 1', () => {
+      describe('nested json', () => {
+        it('of level 1', () => {
           const parent = jh.apply({
             key: 'value',
             _hash: '',
@@ -148,7 +148,7 @@ suite('Hash', () => {
           expect(parent._hash).toEqual(parentHash);
         });
 
-        test('of level 2', () => {
+        it('of level 2', () => {
           const parent = jh.apply({
             _hash: '',
             key: 'value',
@@ -179,7 +179,7 @@ suite('Hash', () => {
         });
       });
 
-      test('complete json example', () => {
+      it('complete json example', () => {
         const json = JSON.parse(exampleJson);
         const hashedJson = jh.apply(json);
 
@@ -187,10 +187,10 @@ suite('Hash', () => {
         expect(hashedJsonString).toEqual(exampleJsonWithHashes);
       });
 
-      suite('data containing arrays', () => {
-        suite('on top level', () => {
-          suite('containing only simple types', () => {
-            test('should convert all values to strings and hash it', () => {
+      describe('data containing arrays', () => {
+        describe('on top level', () => {
+          describe('containing only simple types', () => {
+            it('should convert all values to strings and hash it', () => {
               const json = jh.apply({
                 key: ['value', 1.0, true],
                 _hash: '',
@@ -203,10 +203,10 @@ suite('Hash', () => {
             });
           });
 
-          suite('containing nested objects', () => {
-            suite('should hash the nested objects', () => {
-              suite('and use the hash instead of the stringified value', () => {
-                test('with a complicated array', () => {
+          describe('containing nested objects', () => {
+            describe('should hash the nested objects', () => {
+              describe('and use the hash instead of the stringified value', () => {
+                it('with a complicated array', () => {
                   const json = jh.apply({
                     _hash: '',
                     array: [
@@ -228,7 +228,7 @@ suite('Hash', () => {
                   expect(json._hash).toEqual('13h_Z0wZCF4SQsTyMyq5dV');
                 });
 
-                test('with a simple array', () => {
+                it('with a simple array', () => {
                   const json = jh.apply({
                     _hash: '',
                     array: [{ key: 'value', _hash: '' }],
@@ -249,8 +249,8 @@ suite('Hash', () => {
             });
           });
 
-          suite('containing nested arrays', () => {
-            test('should hash the nested arrays', () => {
+          describe('containing nested arrays', () => {
+            it('should hash the nested arrays', () => {
               const json = jh.apply({
                 _hash: '',
                 array: [['key', 1.0, true], 'hello'],
@@ -268,9 +268,9 @@ suite('Hash', () => {
       });
     });
 
-    suite('writes the hashes directly into the given json', () => {
-      suite('when ApplyConfig.inPlace is true', () => {
-        test('writes hashes into original json', () => {
+    describe('writes the hashes directly into the given json', () => {
+      describe('when ApplyConfig.inPlace is true', () => {
+        it('writes hashes into original json', () => {
           const json = {
             key: 'value',
             _hash: '',
@@ -289,9 +289,9 @@ suite('Hash', () => {
       });
     });
 
-    suite('writes the hashes into a copy', () => {
-      suite('when ApplyConfig.inPlace is false', () => {
-        test('does not touch the original object', () => {
+    describe('writes the hashes into a copy', () => {
+      describe('when ApplyConfig.inPlace is false', () => {
+        it('does not touch the original object', () => {
           const json = {
             key: 'value',
             _hash: '',
@@ -315,8 +315,8 @@ suite('Hash', () => {
       });
     });
 
-    suite('replaces/updates existing hashes', () => {
-      suite('when ApplyConfig.updateExistingHashes is set to true', () => {
+    describe('replaces/updates existing hashes', () => {
+      describe('when ApplyConfig.updateExistingHashes is set to true', () => {
         const allHashesChanged = (json: Json) => {
           return (
             json['a']!['_hash'] !== 'hash_a' &&
@@ -329,7 +329,7 @@ suite('Hash', () => {
         ac.inPlace = true;
         ac.throwOnWrongHashes = false;
 
-        test('should recalculate existing hashes', () => {
+        it('should recalculate existing hashes', () => {
           const json: any = {
             a: {
               _hash: 'hash_a',
@@ -350,8 +350,8 @@ suite('Hash', () => {
       });
     });
 
-    suite('does not touch existing hashes', () => {
-      suite('when ApplyConfig.updateExistingHashes is set to false', () => {
+    describe('does not touch existing hashes', () => {
+      describe('when ApplyConfig.updateExistingHashes is set to false', () => {
         const noHashesChanged = () => {
           return (
             json.a._hash === 'hash_a' &&
@@ -398,14 +398,14 @@ suite('Hash', () => {
           return result;
         };
 
-        test('with all objects having hashes', () => {
+        it('with all objects having hashes', () => {
           ac.updateExistingHashes = false;
           ac.throwOnWrongHashes = false;
           jh.apply(json, ac);
           expect(noHashesChanged()).toBe(true);
         });
 
-        test('with parents have no hashes', () => {
+        it('with parents have no hashes', () => {
           delete json['a']['_hash'];
           ac.updateExistingHashes = false;
           ac.throwOnWrongHashes = false;
@@ -421,8 +421,8 @@ suite('Hash', () => {
       });
     });
 
-    suite('checks numbers', () => {
-      test('.e. throws when NaN is given', () => {
+    describe('checks numbers', () => {
+      it('.e. throws when NaN is given', () => {
         let message;
 
         try {
@@ -437,7 +437,7 @@ suite('Hash', () => {
         expect(message).toEqual('Error: NaN is not supported.');
       });
 
-      test('i.e. throws when json contains an unsupported type', () => {
+      it('i.e. throws when json contains an unsupported type', () => {
         let message;
 
         try {
@@ -452,176 +452,170 @@ suite('Hash', () => {
         expect(message).toEqual('Error: Unsupported type: object');
       });
 
-      suite('i.e. ensures numbers have the right precision', () => {
-        suite(
-          'i.e. it does not throw when numbers have right maximum precision',
-          () => {
-            test('e.g. 1.001', () => {
-              // Test a json that has a number within the precision -> now throw
-              expect(() =>
+      describe('i.e. ensures numbers have the right precision', () => {
+        describe('i.e. it does not throw when numbers have right maximum precision', () => {
+          it('e.g. 1.001', () => {
+            // Test a json that has a number within the precision -> now throw
+            expect(() =>
+              jh.apply({
+                key: 1.001,
+                _hash: '',
+              }),
+            ).not.toThrow();
+          });
+
+          it('e.g. 1.123', () => {
+            // Test a json that has a number within the precision -> now throw
+            expect(() =>
+              jh.apply({
+                key: 1.123,
+                _hash: '',
+              }),
+            ).not.toThrow();
+          });
+
+          it('e.g. -1.123', () => {
+            // Test a json that has a number within the precision -> now throw
+            expect(() =>
+              jh.apply({
+                key: -1.123,
+                _hash: '',
+              }),
+            ).not.toThrow();
+          });
+
+          it('e.g. 1e-2', () => {
+            // Test a json that has a number within the precision -> now throw
+            expect(() =>
+              jh.apply({
+                key: 1e-2,
+                _hash: '',
+              }),
+            ).not.toThrow();
+          });
+        });
+
+        describe('i.e. it does throw when numbers do not match maximum precision', () => {
+          describe('e.g. numbers have more commas then precision allows', () => {
+            it('e.g. 1.0001', () => {
+              expect(jh.config.numberConfig.precision).toBe(0.001);
+
+              // Test a json that has a number outside the precision -> throw
+              let message = '';
+              try {
                 jh.apply({
-                  key: 1.001,
+                  key: 1.0001,
                   _hash: '',
-                }),
-              ).not.toThrow();
+                });
+              } catch (e: any) {
+                message = e.toString();
+              }
+
+              expect(message).toEqual(
+                'Error: Number 1.0001 has a higher precision than 0.001.',
+              );
             });
 
-            test('e.g. 1.123', () => {
-              // Test a json that has a number within the precision -> now throw
-              expect(() =>
+            it('e.g. 1.1234', () => {
+              expect(jh.config.numberConfig.precision).toBe(0.001);
+
+              // Test a json that has a number outside the precision -> throw
+              let message = '';
+              try {
                 jh.apply({
-                  key: 1.123,
+                  key: 1.1234,
                   _hash: '',
-                }),
-              ).not.toThrow();
+                });
+              } catch (e: any) {
+                message = e.toString();
+              }
+
+              expect(message).toEqual(
+                'Error: Number 1.1234 has a higher precision than 0.001.',
+              );
             });
 
-            test('e.g. -1.123', () => {
-              // Test a json that has a number within the precision -> now throw
-              expect(() =>
+            it('e.g. -1.0001', () => {
+              expect(jh.config.numberConfig.precision).toBe(0.001);
+
+              // Test a json that has a number outside the precision -> throw
+              let message = '';
+              try {
                 jh.apply({
-                  key: -1.123,
+                  key: -1.0001,
                   _hash: '',
-                }),
-              ).not.toThrow();
+                });
+              } catch (e: any) {
+                message = e.toString();
+              }
+
+              expect(message).toEqual(
+                'Error: Number -1.0001 has a higher precision than 0.001.',
+              );
             });
 
-            test('e.g. 1e-2', () => {
-              // Test a json that has a number within the precision -> now throw
-              expect(() =>
+            it('e.g. -1.1234', () => {
+              expect(jh.config.numberConfig.precision).toBe(0.001);
+
+              // Test a json that has a number outside the precision -> throw
+              let message = '';
+              try {
                 jh.apply({
-                  key: 1e-2,
+                  key: -1.1234,
                   _hash: '',
-                }),
-              ).not.toThrow();
+                });
+              } catch (e: any) {
+                message = e.toString();
+              }
+
+              expect(message).toEqual(
+                'Error: Number -1.1234 has a higher precision than 0.001.',
+              );
             });
-          },
-        );
 
-        suite(
-          'i.e. it does throw when numbers do not match maximum precision',
-          () => {
-            suite('e.g. numbers have more commas then precision allows', () => {
-              test('e.g. 1.0001', () => {
-                expect(jh.config.numberConfig.precision).toBe(0.001);
+            it('e.g. 9839089403.1235', () => {
+              expect(jh.config.numberConfig.precision).toBe(0.001);
 
-                // Test a json that has a number outside the precision -> throw
-                let message = '';
-                try {
-                  jh.apply({
-                    key: 1.0001,
-                    _hash: '',
-                  });
-                } catch (e: any) {
-                  message = e.toString();
-                }
+              // Test a json that has a number outside the precision -> throw
+              let message = '';
+              try {
+                jh.apply({
+                  key: 9839089403.1235,
+                  _hash: '',
+                });
+              } catch (e: any) {
+                message = e.toString();
+              }
 
-                expect(message).toEqual(
-                  'Error: Number 1.0001 has a higher precision than 0.001.',
-                );
-              });
-
-              test('e.g. 1.1234', () => {
-                expect(jh.config.numberConfig.precision).toBe(0.001);
-
-                // Test a json that has a number outside the precision -> throw
-                let message = '';
-                try {
-                  jh.apply({
-                    key: 1.1234,
-                    _hash: '',
-                  });
-                } catch (e: any) {
-                  message = e.toString();
-                }
-
-                expect(message).toEqual(
-                  'Error: Number 1.1234 has a higher precision than 0.001.',
-                );
-              });
-
-              test('e.g. -1.0001', () => {
-                expect(jh.config.numberConfig.precision).toBe(0.001);
-
-                // Test a json that has a number outside the precision -> throw
-                let message = '';
-                try {
-                  jh.apply({
-                    key: -1.0001,
-                    _hash: '',
-                  });
-                } catch (e: any) {
-                  message = e.toString();
-                }
-
-                expect(message).toEqual(
-                  'Error: Number -1.0001 has a higher precision than 0.001.',
-                );
-              });
-
-              test('e.g. -1.1234', () => {
-                expect(jh.config.numberConfig.precision).toBe(0.001);
-
-                // Test a json that has a number outside the precision -> throw
-                let message = '';
-                try {
-                  jh.apply({
-                    key: -1.1234,
-                    _hash: '',
-                  });
-                } catch (e: any) {
-                  message = e.toString();
-                }
-
-                expect(message).toEqual(
-                  'Error: Number -1.1234 has a higher precision than 0.001.',
-                );
-              });
-
-              test('e.g. 9839089403.1235', () => {
-                expect(jh.config.numberConfig.precision).toBe(0.001);
-
-                // Test a json that has a number outside the precision -> throw
-                let message = '';
-                try {
-                  jh.apply({
-                    key: 9839089403.1235,
-                    _hash: '',
-                  });
-                } catch (e: any) {
-                  message = e.toString();
-                }
-
-                expect(message).toEqual(
-                  'Error: Number 9839089403.1235 has a higher precision than 0.001.',
-                );
-              });
-
-              test('e.g. 9839089403.1235', () => {
-                expect(jh.config.numberConfig.precision).toBe(0.001);
-
-                // Test a json that has a number outside the precision -> throw
-                let message = '';
-                try {
-                  jh.apply({
-                    key: 0.1e-4,
-                    _hash: '',
-                  });
-                } catch (e: any) {
-                  message = e.toString();
-                }
-
-                expect(message).toEqual(
-                  'Error: Number 0.00001 has a higher precision than 0.001.',
-                );
-              });
+              expect(message).toEqual(
+                'Error: Number 9839089403.1235 has a higher precision than 0.001.',
+              );
             });
-          },
-        );
+
+            it('e.g. 9839089403.1235', () => {
+              expect(jh.config.numberConfig.precision).toBe(0.001);
+
+              // Test a json that has a number outside the precision -> throw
+              let message = '';
+              try {
+                jh.apply({
+                  key: 0.1e-4,
+                  _hash: '',
+                });
+              } catch (e: any) {
+                message = e.toString();
+              }
+
+              expect(message).toEqual(
+                'Error: Number 0.00001 has a higher precision than 0.001.',
+              );
+            });
+          });
+        });
       });
 
-      suite('i.e. ensures numbers are in the given range', () => {
-        suite('i.e. values exceed NumbersConfig.maxNum', () => {
+      describe('i.e. ensures numbers are in the given range', () => {
+        describe('i.e. values exceed NumbersConfig.maxNum', () => {
           let max = 0;
 
           beforeEach(() => {
@@ -643,12 +637,12 @@ suite('Hash', () => {
             );
           }
 
-          test('.e.g. shortly above the maximum', () => {
+          it('.e.g. shortly above the maximum', () => {
             check(max + 0.001);
           });
         });
 
-        suite('i.e. values exceed NumbersConfig.maxNum', () => {
+        describe('i.e. values exceed NumbersConfig.maxNum', () => {
           let min = 0;
 
           beforeEach(() => {
@@ -674,65 +668,59 @@ suite('Hash', () => {
             );
           }
 
-          test('.e.g. shortly above the maximum', () => {
+          it('.e.g. shortly above the maximum', () => {
             check(min - 0.001);
           });
         });
       });
     });
 
-    suite(
-      'throws, when existing hashes do not match newly calculated ones',
-      () => {
-        suite('when ApplyConfig.throwOnWrongHashes is set to true', () => {
-          test('with a simple json', () => {
-            const json = {
-              key: 'value',
-              _hash: 'wrongHash',
-            };
+    describe('throws, when existing hashes do not match newly calculated ones', () => {
+      describe('when ApplyConfig.throwOnWrongHashes is set to true', () => {
+        it('with a simple json', () => {
+          const json = {
+            key: 'value',
+            _hash: 'wrongHash',
+          };
 
-            const ac = defaultApplyConfig();
-            ac.throwOnWrongHashes = true;
+          const ac = defaultApplyConfig();
+          ac.throwOnWrongHashes = true;
 
-            let message = '';
-            try {
-              jh.apply(json, ac);
-            } catch (e: any) {
-              message = e.toString();
-            }
+          let message = '';
+          try {
+            jh.apply(json, ac);
+          } catch (e: any) {
+            message = e.toString();
+          }
 
-            expect(message).toEqual(
-              'Error: Hash "wrongHash" does not match the newly calculated one "5Dq88zdSRIOcAS-WM_lYYt". ' +
-                'Please make sure that all systems are producing the same hashes.',
-            );
-          });
+          expect(message).toEqual(
+            'Error: Hash "wrongHash" does not match the newly calculated one "5Dq88zdSRIOcAS-WM_lYYt". ' +
+              'Please make sure that all systems are producing the same hashes.',
+          );
         });
+      });
 
-        suite(
-          'but not when ApplyConfig.throwOnWrongHashes is set to false',
-          () => {
-            test('with a simple json', () => {
-              const json = {
-                key: 'value',
-                _hash: 'wrongHash',
-              };
+      describe('but not when ApplyConfig.throwOnWrongHashes is set to false', () => {
+        it('with a simple json', () => {
+          const json = {
+            key: 'value',
+            _hash: 'wrongHash',
+          };
 
-              const ac = defaultApplyConfig();
-              ac.throwOnWrongHashes = false;
-              ac.inPlace = true;
+          const ac = defaultApplyConfig();
+          ac.throwOnWrongHashes = false;
+          ac.inPlace = true;
 
-              jh.apply(json, ac);
-              expect(json._hash).toEqual('5Dq88zdSRIOcAS-WM_lYYt');
-            });
-          },
-        );
-      },
-    );
+          jh.apply(json, ac);
+          expect(json._hash).toEqual('5Dq88zdSRIOcAS-WM_lYYt');
+        });
+      });
+    });
   });
 
-  suite('applyInPlace()json', () => {
-    suite('default', () => {
-      test('replaces empty hashes with the correct ones', () => {
+  describe('applyInPlace()json', () => {
+    describe('default', () => {
+      it('replaces empty hashes with the correct ones', () => {
         const json = {
           key: 'value',
           _hash: '',
@@ -742,7 +730,7 @@ suite('Hash', () => {
         expect(json._hash).toEqual('5Dq88zdSRIOcAS-WM_lYYt');
       });
 
-      test('throws when existing hashes are wrong', () => {
+      it('throws when existing hashes are wrong', () => {
         const json = {
           key: 'value',
           _hash: 'wrongHash',
@@ -760,8 +748,8 @@ suite('Hash', () => {
         );
       });
 
-      suite('special cases', () => {
-        test('with a simple json', () => {
+      describe('special cases', () => {
+        it('with a simple json', () => {
           jh.applyInPlace({
             name: 'Set width of UE to 1111',
             filter: {
@@ -790,39 +778,36 @@ suite('Hash', () => {
       });
     });
 
-    suite(
-      'with updateExistingHashes set to true and throwOnWrongHashes set to false',
-      () => {
-        const updateExistingHashes = true;
-        const throwOnWrongHashes = true;
+    describe('with updateExistingHashes set to true and throwOnWrongHashes set to false', () => {
+      const updateExistingHashes = true;
+      const throwOnWrongHashes = true;
 
-        test('overwrites existing hashes', () => {
-          const json = {
-            key: 'value',
-            _hash: 'wrongHash',
-          };
+      it('overwrites existing hashes', () => {
+        const json = {
+          key: 'value',
+          _hash: 'wrongHash',
+        };
 
-          jh.applyInPlace(json, updateExistingHashes, !throwOnWrongHashes);
-          expect(json._hash).toEqual('5Dq88zdSRIOcAS-WM_lYYt');
-        });
-      },
-    );
+        jh.applyInPlace(json, updateExistingHashes, !throwOnWrongHashes);
+        expect(json._hash).toEqual('5Dq88zdSRIOcAS-WM_lYYt');
+      });
+    });
   });
 
-  suite('calcHash', () => {
-    test('with strings', () => {
+  describe('calcHash', () => {
+    it('with strings', () => {
       const hash = jh.calcHash('{"key":"value"}');
       expect(hash).toEqual('5Dq88zdSRIOcAS-WM_lYYt');
     });
 
-    test('with arrays', () => {
+    it('with arrays', () => {
       const array = [1, 2, 'value'];
       const hash = jh.calcHash(array);
       const hash2 = jh.apply({ array: array, _hash: '' })._hash;
       expect(hash).toEqual(hash2);
     });
 
-    test('with maps', () => {
+    it('with maps', () => {
       const map = { key: 'value', _hash: '' };
       const hash = jh.calcHash(map);
       const hash2 = jh.apply(map)._hash;
@@ -830,8 +815,8 @@ suite('Hash', () => {
     });
   });
 
-  suite('applyToJsonString(string)', () => {
-    test('parses the string, adds the hashes, and returns the serialized string', () => {
+  describe('applyToJsonString(string)', () => {
+    it('parses the string, adds the hashes, and returns the serialized string', () => {
       const json = '{"key": "value"}';
       const jsonString = jh.applyToJsonString(json);
       expect(jsonString).toEqual(
@@ -840,18 +825,18 @@ suite('Hash', () => {
     });
   });
 
-  suite('copyJson', () => {
+  describe('copyJson', () => {
     const copyJson = Hash.copyJson;
 
-    test('empty json', () => {
+    it('empty json', () => {
       expect(copyJson({})).toEqual({});
     });
 
-    test('simple value', () => {
+    it('simple value', () => {
       expect(copyJson({ a: 1 })).toEqual({ a: 1 });
     });
 
-    test('nested value', () => {
+    it('nested value', () => {
       expect(
         copyJson({
           a: { b: 1 },
@@ -861,7 +846,7 @@ suite('Hash', () => {
       });
     });
 
-    test('list value', () => {
+    it('list value', () => {
       expect(
         copyJson({
           a: [1, 2],
@@ -871,7 +856,7 @@ suite('Hash', () => {
       });
     });
 
-    test('list with list', () => {
+    it('list with list', () => {
       expect(
         copyJson({
           a: [[1, 2]],
@@ -881,7 +866,7 @@ suite('Hash', () => {
       });
     });
 
-    test('list with map', () => {
+    it('list with map', () => {
       expect(
         copyJson({
           a: [{ b: 1 }],
@@ -891,9 +876,9 @@ suite('Hash', () => {
       });
     });
 
-    suite('throws', () => {
-      suite('on unsupported type', () => {
-        test('in map', () => {
+    describe('throws', () => {
+      describe('on unsupported type', () => {
+        it('in map', () => {
           let message;
           try {
             copyJson({
@@ -906,7 +891,7 @@ suite('Hash', () => {
           expect(message).toEqual('Error: Unsupported type: object');
         });
 
-        test('in list', () => {
+        it('in list', () => {
           let message;
           try {
             copyJson({
@@ -922,10 +907,10 @@ suite('Hash', () => {
     });
   });
 
-  suite('isBasicType', () => {
+  describe('isBasicType', () => {
     const isBasicType = Hash.isBasicType;
 
-    test('returns true if type is a basic type', () => {
+    it('returns true if type is a basic type', () => {
       expect(isBasicType(1)).toEqual(true);
       expect(isBasicType(1.0)).toEqual(true);
       expect(isBasicType('1')).toEqual(true);
@@ -935,10 +920,10 @@ suite('Hash', () => {
     });
   });
 
-  suite('jsonString(map)', () => {
+  describe('jsonString(map)', () => {
     const jsonString = Hash.jsonString;
 
-    test('converts a map into a json string', () => {
+    it('converts a map into a json string', () => {
       expect(jsonString({ a: 1 })).toEqual('{"a":1}');
       expect(jsonString({ a: 'b' })).toEqual('{"a":"b"}');
       expect(jsonString({ a: true })).toEqual('{"a":true}');
@@ -957,7 +942,7 @@ suite('Hash', () => {
       ).toEqual('{"a":{"b":1}}');
     });
 
-    test('throws when unsupported type', () => {
+    it('throws when unsupported type', () => {
       let message;
       try {
         jsonString({ a: new Error() });
@@ -969,20 +954,20 @@ suite('Hash', () => {
     });
   });
 
-  suite('_checkBasicType(string)', () => {
-    test('with a string', () => {
+  describe('_checkBasicType(string)', () => {
+    it('with a string', () => {
       expect(jh.checkBasicType('hello')).toEqual('hello');
     });
 
-    test('with an int', () => {
+    it('with an int', () => {
       expect(jh.checkBasicType(10)).toEqual(10);
     });
 
-    test('with a double', () => {
+    it('with a double', () => {
       expect(jh.checkBasicType(true)).toEqual(true);
     });
 
-    test('with an non basic type', () => {
+    it('with an non basic type', () => {
       let message = '';
       try {
         jh.checkBasicType(new Set());
@@ -994,10 +979,10 @@ suite('Hash', () => {
     });
   });
 
-  suite('validate', () => {
-    suite('with an empty json', () => {
-      suite('throws', () => {
-        test('when no hash is given', () => {
+  describe('validate', () => {
+    describe('with an empty json', () => {
+      describe('throws', () => {
+        it('when no hash is given', () => {
           let message: string = '';
 
           try {
@@ -1011,7 +996,7 @@ suite('Hash', () => {
           );
         });
 
-        test('when hash is wrong', () => {
+        it('when hash is wrong', () => {
           let message;
 
           try {
@@ -1028,8 +1013,8 @@ suite('Hash', () => {
         });
       });
 
-      suite('does not throw', () => {
-        test('when hash is correct', () => {
+      describe('does not throw', () => {
+        it('when hash is correct', () => {
           expect(() =>
             jh.validate({
               _hash: 'RBNvo1WzZ4oRRq0W9-hknp',
@@ -1037,7 +1022,7 @@ suite('Hash', () => {
           ).not.toThrow();
         });
 
-        test('returns the valid object unchanged', () => {
+        it('returns the valid object unchanged', () => {
           const json = {
             key: 'value',
             _hash: '5Dq88zdSRIOcAS-WM_lYYt',
@@ -1049,9 +1034,9 @@ suite('Hash', () => {
       });
     });
 
-    suite('with a single level json', () => {
-      suite('throws', () => {
-        test('when no hash is given', () => {
+    describe('with a single level json', () => {
+      describe('throws', () => {
+        it('when no hash is given', () => {
           let message = '';
 
           try {
@@ -1065,7 +1050,7 @@ suite('Hash', () => {
           );
         });
 
-        test('when hash is wrong', () => {
+        it('when hash is wrong', () => {
           let message;
 
           try {
@@ -1083,8 +1068,8 @@ suite('Hash', () => {
         });
       });
 
-      suite('does not throw', () => {
-        test('when hash is correct', () => {
+      describe('does not throw', () => {
+        it('when hash is correct', () => {
           expect(() =>
             jh.validate({
               key: 'value',
@@ -1095,7 +1080,7 @@ suite('Hash', () => {
       });
     });
 
-    suite('with a deeply nested json', () => {
+    describe('with a deeply nested json', () => {
       /** @type {Json} */
       let json2;
 
@@ -1112,9 +1097,9 @@ suite('Hash', () => {
         };
       });
 
-      suite('throws', () => {
-        suite('when no hash is given', () => {
-          test('at the root', () => {
+      describe('throws', () => {
+        describe('when no hash is given', () => {
+          it('at the root', () => {
             let message;
             delete json2['_hash'];
 
@@ -1127,7 +1112,7 @@ suite('Hash', () => {
             expect(message).toBe('Error: Hash is missing.');
           });
 
-          test('at the parent', () => {
+          it('at the parent', () => {
             let message;
             delete json2['parent']['_hash'];
 
@@ -1140,7 +1125,7 @@ suite('Hash', () => {
             expect(message).toBe('Error: Hash at /parent is missing.');
           });
 
-          test('at the child', () => {
+          it('at the child', () => {
             let message;
             delete json2['parent']['child']['_hash'];
 
@@ -1154,8 +1139,8 @@ suite('Hash', () => {
           });
         });
 
-        suite('when hash is wrong', () => {
-          test('at the root', () => {
+        describe('when hash is wrong', () => {
+          it('at the root', () => {
             let message;
             json2['_hash'] = 'wrongHash';
 
@@ -1170,7 +1155,7 @@ suite('Hash', () => {
             );
           });
 
-          test('at the parent', () => {
+          it('at the parent', () => {
             let message;
             json2['parent']['_hash'] = 'wrongHash';
 
@@ -1185,7 +1170,7 @@ suite('Hash', () => {
             );
           });
 
-          test('at the child', () => {
+          it('at the child', () => {
             let message;
             json2['parent']['child']['_hash'] = 'wrongHash';
 
@@ -1201,15 +1186,15 @@ suite('Hash', () => {
           });
         });
 
-        suite('not', () => {
-          test('when hash is correct', () => {
+        describe('not', () => {
+          it('when hash is correct', () => {
             expect(() => jh.validate(json2)).not.toThrow();
           });
         });
       });
     });
 
-    suite('with a deeply nested json with child array', () => {
+    describe('with a deeply nested json with child array', () => {
       /** @type {Json} */
       let json2;
 
@@ -1225,9 +1210,9 @@ suite('Hash', () => {
         };
       });
 
-      suite('throws', () => {
-        suite('when no hash is given', () => {
-          test('at the parent', () => {
+      describe('throws', () => {
+        describe('when no hash is given', () => {
+          it('at the parent', () => {
             let message;
             delete json2['parent'][0]['_hash'];
 
@@ -1240,7 +1225,7 @@ suite('Hash', () => {
             expect(message).toBe('Error: Hash at /parent/0 is missing.');
           });
 
-          test('at the child', () => {
+          it('at the child', () => {
             let message;
             delete json2['parent'][0]['child'][0]['_hash'];
 
@@ -1256,8 +1241,8 @@ suite('Hash', () => {
           });
         });
 
-        suite('when hash is wrong', () => {
-          test('at the parent', () => {
+        describe('when hash is wrong', () => {
+          it('at the parent', () => {
             let message;
             json2['parent'][0]['_hash'] = 'wrongHash';
 
@@ -1272,7 +1257,7 @@ suite('Hash', () => {
             );
           });
 
-          test('at the child', () => {
+          it('at the child', () => {
             let message;
             json2['parent'][0]['child'][0]['_hash'] = 'wrongHash';
 
@@ -1288,16 +1273,16 @@ suite('Hash', () => {
           });
         });
 
-        suite('not', () => {
-          test('when hash is correct', () => {
+        describe('not', () => {
+          it('when hash is correct', () => {
             expect(() => jh.validate(json2)).not.toThrow();
           });
         });
       });
     });
 
-    suite('special cases', () => {
-      test('dictionaries with numbers as key', async () => {
+    describe('special cases', () => {
+      it('dictionaries with numbers as key', async () => {
         const json = {
           '1270537611': 'mxK7Q1zeVB1httPrYsn0ow',
           '522965': 'PAue6PJ83JBmIqoElcDmot',

@@ -4,12 +4,12 @@
 // Use of this source code is governed by terms that can be
 // found in the LICENSE file in the root of this package.
 
-import { expect, suite, test } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { updateGoldens } from './update-goldens';
 
-suite('updateGoldens', () => {
-  test('should be set to false after updating', () => {
+describe('updateGoldens', () => {
+  it('should be set to false after updating', () => {
     expect(updateGoldens).toBe(false);
   });
 });

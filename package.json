@@ -21,9 +21,10 @@
   "type": "module",
   "scripts": {
     "build": "npx vite build && tsc && npx vite-node src/build-readme.ts",
-    "test": "npx eslint && npx vitest run --coverage",
+    "test": "npx vitest run --coverage && npm run lint",
     "prebuild": "npm run test",
-    "prepublishOnly": "npm run build && npm run test"
+    "prepublishOnly": "npm run build && npm run test",
+    "lint": "npx eslint"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.26.0",
