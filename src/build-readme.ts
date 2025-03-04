@@ -4,7 +4,7 @@
 // Use of this source code is governed by terms that can be
 // found in the LICENSE file in the root of this package.
 
-import { readFile, writeFile } from 'fs/promises';
+import { mkdir, readFile, writeFile } from 'fs/promises';
 
 export const buildReadme = async () => {
   // Read README.public.md
@@ -25,6 +25,15 @@ export const buildReadme = async () => {
   /* v8 ignore stop */
 
   result = result.replace(importKey, "import { h } from '@rljson/hash';");
+
+  // Create dist if not existing
+  /* v8 ignore start */
+  try {
+    await mkdir('dist');
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (_: unknown) {}
+  /* v8 ignore stop */
 
   //  Write result to dist/README.md
   await writeFile('dist/README.md', result);
