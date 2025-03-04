@@ -1,3 +1,8 @@
+// @license
+// Copyright (c) 2025 Rljson
+//
+// Use of this source code is governed by terms that can be
+// found in the LICENSE file in the root of this package.
 import { Sha256 } from '@aws-crypto/sha256-js';
 
 import { fromUint8Array } from 'js-base64';
@@ -15,7 +20,7 @@ export class Hash {
   // ...........................................................................
   /**
    * Constructor
-   * @param {HashConfig} [config=HashConfig.default] - Configuration for the hash.
+   * @param config - Configuration for the hash.
    */
   constructor(config?: HashConfig) {
     this.config = config ?? HashConfig.default;
@@ -33,9 +38,9 @@ export class Hash {
   // ...........................................................................
   /**
    * Writes hashes into the JSON object.
-   * @param {Record<string, any>} json - The JSON object to hash.
-   * @param {ApplyConfig} [applyConfig=HashApplyToConfig.default] - Options for the operation.
-   * @returns {Record<string, any>} The JSON object with hashes added.
+   * @param json - The JSON object to hash.
+   * @param [applyConfig=HashApplyToConfig.default] - Options for the operation.
+   * @returns The JSON object with hashes added.
    */
   apply<T extends Record<string, any>>(json: T, applyConfig?: ApplyConfig): T {
     applyConfig = applyConfig ?? defaultApplyConfig();
@@ -66,8 +71,8 @@ export class Hash {
   // ...........................................................................
   /**
    * Writes hashes into a JSON string.
-   * @param {string} jsonString - The JSON string to hash.
-   * @returns {string} The JSON string with hashes added.
+   * @param jsonString - The JSON string to hash.
+   * @returns The JSON string with hashes added.
    */
   applyToJsonString(jsonString: string): string {
     const json = JSON.parse(jsonString);
@@ -80,8 +85,8 @@ export class Hash {
   // ...........................................................................
   /**
    * Calculates a SHA-256 hash of a string with base64 url.
-   * @param {string} value - The string to hash.
-   * @returns {string} The calculated hash.
+   * @param value - The string to hash.
+   * @returns The calculated hash.
    */
   calcHash(value: string | Array<any> | Record<string, any>): string {
     if (typeof value === 'string') {
@@ -96,7 +101,7 @@ export class Hash {
   // ...........................................................................
   /**
    * Throws if hashes are not correct.
-   * @param {Record<string, any>} json - The JSON object to validate.
+   * @param json - The JSON object to validate.
    */
   validate<T extends Record<string, any>>(json: T): T {
     // Check the hash of the high level element
@@ -125,8 +130,8 @@ export class Hash {
 
   /**
    * Converts a map to a JSON string.
-   * @param {Record<string, any>} map - The map to convert.
-   * @returns {string} The JSON string representation of the map.
+   * @param ap - The map to convert.
+   * @returns The JSON string representation of the map.
    */
   static jsonString = Hash._jsonString;
 
@@ -142,9 +147,9 @@ export class Hash {
   // ...........................................................................
   /**
    * Validates the hashes of the JSON object.
-   * @param {Record<string, any>} jsonIs - The JSON object to check.
-   * @param {Record<string, any>} jsonShould - The JSON object with correct hashes.
-   * @param {string} path - The current path in the JSON object.
+   * @param jsonIs - The JSON object to check.
+   * @param jsonShould - The JSON object with correct hashes.
+   * @param path - The current path in the JSON object.
    */
   private _validate(
     jsonIs: Record<string, any>,
@@ -217,8 +222,8 @@ export class Hash {
   // ...........................................................................
   /**
    * Recursively adds hashes to a nested object.
-   * @param {Record<string, any>} obj - The object to add hashes to.
-   * @param {ApplyConfig} applyConfig - Whether to process recursively.
+   * @param obj - The object to add hashes to.
+   * @param applyConfig - Whether to process recursively.
    */
   private _addHashesToObject(
     obj: Record<string, any>,
@@ -303,8 +308,8 @@ export class Hash {
   // ...........................................................................
   /**
    * Builds a representation of a list for hashing.
-   * @param {Array<any>} list - The list to flatten.
-   * @returns {Array<any>} The flattened list.
+   * @param list - The list to flatten.
+   * @returns The flattened list.
    */
   private _flattenList(list: Array<any>): Array<any> {
     const flattenedList: Array<any> = [];
@@ -327,8 +332,8 @@ export class Hash {
   // ...........................................................................
   /**
    * Recursively processes a list, adding hashes to nested objects and lists.
-   * @param {Array<any>} list - The list to process.
-   * @param {ApplyConfig} applyConfig - Whether to process recursively.
+   * @param list - The list to process.
+   * @param applyConfig - Whether to process recursively.
    */
   private _processList(list: Array<any>, applyConfig: ApplyConfig): void {
     for (const element of list) {
@@ -345,8 +350,8 @@ export class Hash {
   // ...........................................................................
   /**
    * Copies the JSON object.
-   * @param {Record<string, any>} json - The JSON object to copy.
-   * @returns {Record<string, any>} The copied JSON object.
+   * @param json - The JSON object to copy.
+   * @returns The copied JSON object.
    */
   private static _copyJson(json: Record<string, any>): Record<string, any> {
     const copy: Record<string, any> = {};
@@ -369,8 +374,8 @@ export class Hash {
   // ...........................................................................
   /**
    * Copies the list.
-   * @param {Array<any>} list - The list to copy.
-   * @returns {Array<any>} The copied list.
+   * @param list - The list to copy.
+   * @returns The copied list.
    */
   private static _copyList(list: Array<any>): Array<any> {
     const copy: Array<any> = [];
@@ -393,8 +398,8 @@ export class Hash {
   // ...........................................................................
   /**
    * Checks if a value is a basic type.
-   * @param {any} value - The value to check.
-   * @returns {boolean} True if the value is a basic type, false otherwise.
+   * @param value - The value to check.
+   * @returns True if the value is a basic type, false otherwise.
    */
   private static _isBasicType(value: any): boolean {
     return (
@@ -437,7 +442,7 @@ export class Hash {
   /**
    * Checks if a number exceeds the defined range.
    * @param {number} value - The number to check.
-   * @returns {boolean} True if the number exceeds the given range, false otherwise.
+   * @returns True if the number exceeds the given range, false otherwise.
    */
   private _exceedsUpperRange(value: number): boolean {
     return value > this.config.numberConfig.maxNum;
@@ -447,7 +452,7 @@ export class Hash {
   /**
    * Checks if a number exceeds the defined range.
    * @param {number} value - The number to check.
-   * @returns {boolean} True if the number exceeds the given range, false otherwise.
+   * @returns True if the number exceeds the given range, false otherwise.
    */
   private _exceedsLowerRange(value: number): boolean {
     return value < this.config.numberConfig.minNum;
@@ -457,7 +462,7 @@ export class Hash {
   /**
    * Checks if a number exceeds the precision.
    * @param {number} value - The number to check.
-   * @returns {boolean} True if the number exceeds the precision, false otherwise.
+   * @returns True if the number exceeds the precision, false otherwise.
    */
   private _exceedsPrecision(value: number): boolean {
     const precision = this.config.numberConfig.precision;
@@ -468,8 +473,8 @@ export class Hash {
   // ...........................................................................
   /**
    * Converts a map to a JSON string.
-   * @param {Record<string, any>} map - The map to convert.
-   * @returns {string} The JSON string representation of the map.
+   * @param Record<string, any>} map - The map to convert.
+   * @returns The JSON string representation of the map.
    */
   private static _jsonString(map: Record<string, any>): string {
     // Sort the object keys to ensure consistent key order
