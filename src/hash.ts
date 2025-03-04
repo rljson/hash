@@ -9,6 +9,7 @@ import { fromUint8Array } from 'js-base64';
 
 import { ApplyConfig, defaultApplyConfig } from './apply-config.ts';
 import { HashConfig } from './hash-config.ts';
+import { Json, JsonArray, JsonValue } from './json.ts';
 
 // .............................................................................
 /**
@@ -42,19 +43,19 @@ export class Hash {
    * @param [applyConfig=HashApplyToConfig.default] - Options for the operation.
    * @returns The JSON object with hashes added.
    */
-  apply<T extends Record<string, any>>(json: T, applyConfig?: ApplyConfig): T {
+  apply<T extends Json>(json: T, applyConfig?: ApplyConfig): T {
     applyConfig = applyConfig ?? defaultApplyConfig();
     const copy = applyConfig.inPlace ? json : Hash._copyJson(json);
     this._addHashesToObject(copy, applyConfig);
 
     if (applyConfig.throwOnWrongHashes) {
-      this.validate(copy);
+      this.validate(copy as Json);
     }
     return copy as T;
   }
 
   // ...........................................................................
-  applyInPlace<T extends Record<string, any>>(
+  applyInPlace<T extends Json>(
     json: T,
     updateExistingHashes: boolean = false,
     throwOnWrongHashes: boolean = true,
@@ -88,13 +89,13 @@ export class Hash {
    * @param value - The string to hash.
    * @returns The calculated hash.
    */
-  calcHash(value: string | Array<any> | Record<string, any>): string {
+  calcHash(value: JsonValue): string {
     if (typeof value === 'string') {
       return this._calcStringHash(value);
     } else if (Array.isArray(value)) {
       return this._calcArrayHash(value);
     } else {
-      return this.apply(value)._hash;
+      return this.apply(value as Json)._hash;
     }
   }
 
@@ -103,11 +104,11 @@ export class Hash {
    * Throws if hashes are not correct.
    * @param json - The JSON object to validate.
    */
-  validate<T extends Record<string, any>>(json: T): T {
+  validate<T extends Json>(json: T): T {
     // Check the hash of the high level element
     const ac = defaultApplyConfig();
     ac.throwOnWrongHashes = false;
-    const jsonWithCorrectHashes = this.apply(json, ac);
+    const jsonWithCorrectHashes = this.apply(json as Json, ac);
     this._validate(json, jsonWithCorrectHashes, '');
     return json;
   }
@@ -151,11 +152,7 @@ export class Hash {
    * @param jsonShould - The JSON object with correct hashes.
    * @param path - The current path in the JSON object.
    */
-  private _validate(
-    jsonIs: Record<string, any>,
-    jsonShould: Record<string, any>,
-    path: string,
-  ): void {
+  private _validate(jsonIs: Json, jsonShould: Json, path: string): void {
     // Check the hashes of the parent element
     const expectedHash = jsonShould['_hash'];
     const actualHash = jsonIs['_hash'];
@@ -182,7 +179,7 @@ export class Hash {
       ) {
         const childIs = value;
         const childShould = jsonShould[key];
-        this._validate(childIs, childShould, `${path}/${key}`);
+        this._validate(childIs, childShould as Json, `${path}/${key}`);
       } else if (Array.isArray(value)) {
         for (let i = 0; i < value.length; i++) {
           if (typeof value[i] === 'object' && !Array.isArray(value[i])) {
@@ -190,8 +187,8 @@ export class Hash {
             if (itemIs == null) {
               continue;
             }
-            const itemShould = jsonShould[key][i];
-            this._validate(itemIs, itemShould, `${path}/${key}/${i}`);
+            const itemShould = (jsonShould[key] as JsonArray)[i] as Json;
+            this._validate(itemIs as Json, itemShould, `${path}/${key}/${i}`);
           }
         }
       }
@@ -225,10 +222,7 @@ export class Hash {
    * @param obj - The object to add hashes to.
    * @param applyConfig - Whether to process recursively.
    */
-  private _addHashesToObject(
-    obj: Record<string, any>,
-    applyConfig: ApplyConfig,
-  ): void {
+  private _addHashesToObject(obj: Json, applyConfig: ApplyConfig): void {
     const updateExisting = applyConfig.updateExistingHashes;
     const throwOnWrongHashes = applyConfig.throwOnWrongHashes;
 
@@ -473,7 +467,7 @@ export class Hash {
   // ...........................................................................
   /**
    * Converts a map to a JSON string.
-   * @param Record<string, any>} map - The map to convert.
+   * @param map - The map to convert.
    * @returns The JSON string representation of the map.
    */
   private static _jsonString(map: Record<string, any>): string {
