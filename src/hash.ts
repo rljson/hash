@@ -9,7 +9,7 @@ import { HashConfig } from './hash-config.ts';
 /**
  * Adds hashes to JSON object.
  */
-export class JsonHash {
+export class Hash {
   config: HashConfig;
 
   // ...........................................................................
@@ -24,10 +24,10 @@ export class JsonHash {
   /**
    * Default instance.
    *
-   * @type {JsonHash}
+   * @type {Hash}
    */
-  static get default(): JsonHash {
-    return new JsonHash();
+  static get default(): Hash {
+    return new Hash();
   }
 
   // ...........................................................................
@@ -39,7 +39,7 @@ export class JsonHash {
    */
   apply<T extends Record<string, any>>(json: T, applyConfig?: ApplyConfig): T {
     applyConfig = applyConfig ?? defaultApplyConfig();
-    const copy = applyConfig.inPlace ? json : JsonHash._copyJson(json);
+    const copy = applyConfig.inPlace ? json : Hash._copyJson(json);
     this._addHashesToObject(copy, applyConfig);
 
     if (applyConfig.throwOnWrongHashes) {
@@ -111,24 +111,24 @@ export class JsonHash {
   /**
    * Copies the JSON object.
    */
-  static copyJson = JsonHash._copyJson;
+  static copyJson = Hash._copyJson;
 
   /**
    * Copies the list deeply
    */
-  static copyList = JsonHash._copyList;
+  static copyList = Hash._copyList;
 
   /**
    * Returns the value when it is a basic type. Otherwise throws an error.
    */
-  static isBasicType = JsonHash._isBasicType;
+  static isBasicType = Hash._isBasicType;
 
   /**
    * Converts a map to a JSON string.
    * @param {Record<string, any>} map - The map to convert.
    * @returns {string} The JSON string representation of the map.
    */
-  static jsonString = JsonHash._jsonString;
+  static jsonString = Hash._jsonString;
 
   /**
    * Checks an basic type. Throws an error if the type is not supported.
@@ -261,12 +261,12 @@ export class JsonHash {
         objToHash[key] = value['_hash'];
       } else if (Array.isArray(value)) {
         objToHash[key] = this._flattenList(value);
-      } else if (JsonHash._isBasicType(value)) {
+      } else if (Hash._isBasicType(value)) {
         objToHash[key] = this._checkBasicType(value);
       }
     }
 
-    const sortedMapJson = JsonHash._jsonString(objToHash);
+    const sortedMapJson = Hash._jsonString(objToHash);
 
     // Compute the SHA-256 hash of the JSON string
     const hash = this.calcHash(sortedMapJson);
@@ -316,7 +316,7 @@ export class JsonHash {
         flattenedList.push(element['_hash']);
       } else if (Array.isArray(element)) {
         flattenedList.push(this._flattenList(element));
-      } else if (JsonHash._isBasicType(element)) {
+      } else if (Hash._isBasicType(element)) {
         flattenedList.push(this._checkBasicType(element));
       }
     }
@@ -354,11 +354,11 @@ export class JsonHash {
       if (value === null) {
         copy[key] = null;
       } else if (Array.isArray(value)) {
-        copy[key] = JsonHash._copyList(value);
-      } else if (JsonHash._isBasicType(value)) {
+        copy[key] = Hash._copyList(value);
+      } else if (Hash._isBasicType(value)) {
         copy[key] = value;
       } else if (value.constructor === Object) {
-        copy[key] = JsonHash._copyJson(value);
+        copy[key] = Hash._copyJson(value);
       } else {
         throw new Error(`Unsupported type: ${typeof value}`);
       }
@@ -378,11 +378,11 @@ export class JsonHash {
       if (element == null) {
         copy.push(null);
       } else if (Array.isArray(element)) {
-        copy.push(JsonHash._copyList(element));
-      } else if (JsonHash._isBasicType(element)) {
+        copy.push(Hash._copyList(element));
+      } else if (Hash._isBasicType(element)) {
         copy.push(element);
       } else if (element.constructor === Object) {
-        copy.push(JsonHash._copyJson(element));
+        copy.push(Hash._copyJson(element));
       } else {
         throw new Error(`Unsupported type: ${typeof element}`);
       }
@@ -485,7 +485,7 @@ export class JsonHash {
       } else if (Array.isArray(value)) {
         return `[${value.map(encodeValue).join(',')}]`;
       } else if (value.constructor === Object) {
-        return JsonHash._jsonString(value);
+        return Hash._jsonString(value);
       } else {
         throw new Error(`Unsupported type: ${typeof value}`);
       }
@@ -508,4 +508,4 @@ export class JsonHash {
 /**
  * A shortcut to a default instance
  */
-export const h = JsonHash.default;
+export const h = Hash.default;
