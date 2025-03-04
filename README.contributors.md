@@ -83,7 +83,7 @@ In Vscode: At the `left side bar` click on the `Test tube` icon to open the `Tes
 
 At the `top`, click on the `refresh` icon to show update the tests.
 
-Open a test file, e.g. `server.spec.ts`.
+Open a test file (`*.spec.ts`)
 
 Set a breakpoint.
 

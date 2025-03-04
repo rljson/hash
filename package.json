@@ -21,7 +21,6 @@
   "type": "module",
   "scripts": {
     "build": "npx vite build && tsc && npx vite-node src/build-readme.ts",
-    "prepare": "npm run build",
     "test": "npx eslint && npx vitest run --coverage",
     "prebuild": "npm run test",
     "prepublishOnly": "npm run build && npm run test"

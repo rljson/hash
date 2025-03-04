@@ -213,8 +213,8 @@ suite('Hash', () => {
                       'key',
                       1.0,
                       true,
-                      { key1: 'value1' },
-                      { key0: 'value0' },
+                      { key1: 'value1', _hash: '' },
+                      { key0: 'value0', _hash: '' },
                     ],
                   });
 
@@ -273,6 +273,7 @@ suite('Hash', () => {
         test('writes hashes into original json', () => {
           const json = {
             key: 'value',
+            _hash: '',
           };
 
           const ac = defaultApplyConfig();
@@ -293,6 +294,7 @@ suite('Hash', () => {
         test('does not touch the original object', () => {
           const json = {
             key: 'value',
+            _hash: '',
           };
           const ac = defaultApplyConfig();
           ac.inPlace = false;
@@ -307,6 +309,7 @@ suite('Hash', () => {
           // The original json is untouched
           expect(json).toEqual({
             key: 'value',
+            _hash: '',
           });
         });
       });
@@ -425,6 +428,7 @@ suite('Hash', () => {
         try {
           jh.apply({
             key: NaN,
+            _hash: '',
           });
         } catch (e: any) {
           message = e.toString();
@@ -438,7 +442,8 @@ suite('Hash', () => {
 
         try {
           jh.apply({
-            key: new Error(),
+            _hash: '',
+            key: new Error() as unknown as Json,
           });
         } catch (e: any) {
           message = e.toString();
@@ -456,6 +461,7 @@ suite('Hash', () => {
               expect(() =>
                 jh.apply({
                   key: 1.001,
+                  _hash: '',
                 }),
               ).not.toThrow();
             });
@@ -465,6 +471,7 @@ suite('Hash', () => {
               expect(() =>
                 jh.apply({
                   key: 1.123,
+                  _hash: '',
                 }),
               ).not.toThrow();
             });
@@ -474,6 +481,7 @@ suite('Hash', () => {
               expect(() =>
                 jh.apply({
                   key: -1.123,
+                  _hash: '',
                 }),
               ).not.toThrow();
             });
@@ -483,6 +491,7 @@ suite('Hash', () => {
               expect(() =>
                 jh.apply({
                   key: 1e-2,
+                  _hash: '',
                 }),
               ).not.toThrow();
             });
@@ -501,6 +510,7 @@ suite('Hash', () => {
                 try {
                   jh.apply({
                     key: 1.0001,
+                    _hash: '',
                   });
                 } catch (e: any) {
                   message = e.toString();
@@ -519,6 +529,7 @@ suite('Hash', () => {
                 try {
                   jh.apply({
                     key: 1.1234,
+                    _hash: '',
                   });
                 } catch (e: any) {
                   message = e.toString();
@@ -537,6 +548,7 @@ suite('Hash', () => {
                 try {
                   jh.apply({
                     key: -1.0001,
+                    _hash: '',
                   });
                 } catch (e: any) {
                   message = e.toString();
@@ -555,6 +567,7 @@ suite('Hash', () => {
                 try {
                   jh.apply({
                     key: -1.1234,
+                    _hash: '',
                   });
                 } catch (e: any) {
                   message = e.toString();
@@ -573,6 +586,7 @@ suite('Hash', () => {
                 try {
                   jh.apply({
                     key: 9839089403.1235,
+                    _hash: '',
                   });
                 } catch (e: any) {
                   message = e.toString();
@@ -591,6 +605,7 @@ suite('Hash', () => {
                 try {
                   jh.apply({
                     key: 0.1e-4,
+                    _hash: '',
                   });
                 } catch (e: any) {
                   message = e.toString();
@@ -618,7 +633,7 @@ suite('Hash', () => {
             val = parseFloat(val.toFixed(3));
 
             try {
-              jh.apply({ key: val });
+              jh.apply({ key: val, _hash: '' });
             } catch (e: any) {
               message = e.toString();
             }
@@ -649,7 +664,7 @@ suite('Hash', () => {
             val = parseFloat(val.toFixed(3));
 
             try {
-              jh.apply({ key: val });
+              jh.apply({ key: val, _hash: '' });
             } catch (e: any) {
               message = e.toString();
             }
@@ -983,15 +998,17 @@ suite('Hash', () => {
     suite('with an empty json', () => {
       suite('throws', () => {
         test('when no hash is given', () => {
-          let message;
+          let message: string = '';
 
           try {
-            jh.validate({});
+            jh.validate({ _hash: 'fd8089' });
           } catch (e: any) {
             message = e.toString();
           }
 
-          expect(message).toBe('Error: Hash is missing.');
+          expect(message).toBe(
+            'Error: Hash "fd8089" is wrong. Should be "RBNvo1WzZ4oRRq0W9-hknp".',
+          );
         });
 
         test('when hash is wrong', () => {
@@ -1035,15 +1052,17 @@ suite('Hash', () => {
     suite('with a single level json', () => {
       suite('throws', () => {
         test('when no hash is given', () => {
-          let message;
+          let message = '';
 
           try {
-            jh.validate({ key: 'value' });
+            jh.validate({ key: 'value', _hash: 'xyz' });
           } catch (e: any) {
             message = e.toString();
           }
 
-          expect(message).toBe('Error: Hash is missing.');
+          expect(message).toBe(
+            'Error: Hash "xyz" is wrong. Should be "5Dq88zdSRIOcAS-WM_lYYt".',
+          );
         });
 
         test('when hash is wrong', () => {
@@ -1282,6 +1301,7 @@ suite('Hash', () => {
         const json = {
           '1270537611': 'mxK7Q1zeVB1httPrYsn0ow',
           '522965': 'PAue6PJ83JBmIqoElcDmot',
+          _hash: '',
         };
 
         jh.apply(json, {
