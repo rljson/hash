@@ -7,33 +7,30 @@
 /**
  * When writing hashes into a given JSON object, we have various options.
  */
-export class ApplyConfig {
-  inPlace: boolean;
-  updateExistingHashes: boolean;
-  throwIfOnWrongHashes: boolean;
+export interface ApplyConfig {
+  /**
+   * Whether to modify the JSON object in place.
+   */
+  inPlace?: boolean;
 
   /**
-   * Constructor
-   * @param {boolean} [inPlace=false] - Whether to modify the JSON object in place.
-   * @param {boolean} [updateExistingHashes=true] - Whether to update existing hashes.
-   * @param {boolean} [throwOnHashMismatch=true] - Whether to throw an error if existing hashes are wrong.
+   * Whether to update existing hashes.
    */
-  constructor(
-    inPlace?: boolean,
-    updateExistingHashes?: boolean,
-    throwOnHashMismatch?: boolean,
-  ) {
-    this.inPlace = inPlace ?? false;
-    this.updateExistingHashes = updateExistingHashes ?? true;
-    this.throwIfOnWrongHashes = throwOnHashMismatch ?? true;
-  }
+  updateExistingHashes?: boolean;
 
   /**
-   * Default configuration.
-   *
-   * @type {ApplyConfig}
+   * Whether to throw an error if existing hashes are wrong.
    */
-  static get default(): ApplyConfig {
-    return new ApplyConfig();
-  }
+  throwOnWrongHashes?: boolean;
 }
+
+/**
+ * Default configuration for applying hashes.
+ */
+export const defaultApplyConfig = (): ApplyConfig => {
+  return {
+    inPlace: false,
+    updateExistingHashes: true,
+    throwOnWrongHashes: true,
+  };
+};

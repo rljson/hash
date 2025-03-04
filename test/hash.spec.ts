@@ -6,7 +6,7 @@
 
 import { beforeEach, expect, suite, test } from 'vitest';
 
-import { ApplyConfig } from '../src/apply-config';
+import { defaultApplyConfig } from '../src/apply-config';
 import { Hash } from '../src/hash';
 
 suite('Hash', () => {
@@ -70,8 +70,8 @@ suite('Hash', () => {
         });
 
         test('existing _hash should be overwritten', () => {
-          const ac = ApplyConfig.default;
-          ac.throwIfOnWrongHashes = false;
+          const ac = defaultApplyConfig();
+          ac.throwOnWrongHashes = false;
 
           const json = jh.apply(
             {
@@ -99,9 +99,9 @@ suite('Hash', () => {
             c: true,
           };
 
-          let j0: Record<string, any>;
+          let j0: Json;
 
-          let j1: Record<string, any>;
+          let j1: Json;
 
           beforeEach(() => {
             j0 = jh.apply(json0);
@@ -272,7 +272,7 @@ suite('Hash', () => {
             key: 'value',
           };
 
-          const ac = new ApplyConfig();
+          const ac = defaultApplyConfig();
           ac.inPlace = true;
           const hashedJson = jh.apply(json, ac);
           expect(hashedJson).toEqual({
@@ -291,7 +291,7 @@ suite('Hash', () => {
           const json = {
             key: 'value',
           };
-          const ac = new ApplyConfig();
+          const ac = defaultApplyConfig();
           ac.inPlace = false;
 
           // The returned copy has the hashes
@@ -311,7 +311,7 @@ suite('Hash', () => {
 
     suite('replaces/updates existing hashes', () => {
       suite('when ApplyConfig.updateExistingHashes is set to true', () => {
-        const allHashesChanged = (json: Record<string, any>) => {
+        const allHashesChanged = (json: Json) => {
           return (
             json['a']['_hash'] !== 'hash_a' &&
             json['a']['b']['_hash'] !== 'hash_b' &&
@@ -319,9 +319,9 @@ suite('Hash', () => {
           );
         };
 
-        const ac = new ApplyConfig();
+        const ac = defaultApplyConfig();
         ac.inPlace = true;
-        ac.throwIfOnWrongHashes = false;
+        ac.throwOnWrongHashes = false;
 
         test('should recalculate existing hashes', () => {
           const json = {
@@ -354,10 +354,10 @@ suite('Hash', () => {
           );
         };
 
-        const ac = new ApplyConfig();
+        const ac = defaultApplyConfig();
         ac.inPlace = true;
 
-        let json: Record<string, any> = {};
+        let json: Json = {};
 
         beforeEach(() => {
           json = {
@@ -393,7 +393,7 @@ suite('Hash', () => {
 
         test('with all objects having hashes', () => {
           ac.updateExistingHashes = false;
-          ac.throwIfOnWrongHashes = false;
+          ac.throwOnWrongHashes = false;
           jh.apply(json, ac);
           expect(noHashesChanged()).toBe(true);
         });
@@ -401,7 +401,7 @@ suite('Hash', () => {
         test('with parents have no hashes', () => {
           delete json['a']['_hash'];
           ac.updateExistingHashes = false;
-          ac.throwIfOnWrongHashes = false;
+          ac.throwOnWrongHashes = false;
           jh.apply(json, ac);
           expect(changedHashes()).toEqual(['a']);
 
@@ -665,15 +665,15 @@ suite('Hash', () => {
     suite(
       'throws, when existing hashes do not match newly calculated ones',
       () => {
-        suite('when ApplyConfig.throwIfOnWrongHashes is set to true', () => {
+        suite('when ApplyConfig.throwOnWrongHashes is set to true', () => {
           test('with a simple json', () => {
             const json = {
               key: 'value',
               _hash: 'wrongHash',
             };
 
-            const ac = new ApplyConfig();
-            ac.throwIfOnWrongHashes = true;
+            const ac = defaultApplyConfig();
+            ac.throwOnWrongHashes = true;
 
             let message = '';
             try {
@@ -690,7 +690,7 @@ suite('Hash', () => {
         });
 
         suite(
-          'but not when ApplyConfig.throwIfOnWrongHashes is set to false',
+          'but not when ApplyConfig.throwOnWrongHashes is set to false',
           () => {
             test('with a simple json', () => {
               const json = {
@@ -698,8 +698,8 @@ suite('Hash', () => {
                 _hash: 'wrongHash',
               };
 
-              const ac = new ApplyConfig();
-              ac.throwIfOnWrongHashes = false;
+              const ac = defaultApplyConfig();
+              ac.throwOnWrongHashes = false;
               ac.inPlace = true;
 
               jh.apply(json, ac);
@@ -1073,7 +1073,7 @@ suite('Hash', () => {
     });
 
     suite('with a deeply nested json', () => {
-      /** @type {Record<string, any>} */
+      /** @type {Json} */
       let json2;
 
       beforeEach(() => {
@@ -1187,7 +1187,7 @@ suite('Hash', () => {
     });
 
     suite('with a deeply nested json with child array', () => {
-      /** @type {Record<string, any>} */
+      /** @type {Json} */
       let json2;
 
       beforeEach(() => {
@@ -1280,7 +1280,11 @@ suite('Hash', () => {
           '522965': 'PAue6PJ83JBmIqoElcDmot',
         };
 
-        jh.apply(json, new ApplyConfig(true, true, false));
+        jh.apply(json, {
+          inPlace: true,
+          updateExistingHashes: true,
+          throwOnWrongHashes: false,
+        });
 
         expect(json['_hash']).toBe('W4CAuZT_tIicr6crbn6LA8');
       });
