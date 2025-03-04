@@ -30,9 +30,9 @@ export const buildReadme = async () => {
   /* v8 ignore start */
   try {
     await mkdir('dist');
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (_: unknown) {}
+  } catch {
+  } finally {
+  }
   /* v8 ignore stop */
 
   //  Write result to dist/README.md
