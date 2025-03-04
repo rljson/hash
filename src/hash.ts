@@ -18,6 +18,10 @@ import { Json, JsonArray, JsonValue } from './json.ts';
 export class Hash {
   config: HashConfig;
 
+  foo() {
+    console.log('foo');
+  }
+
   // ...........................................................................
   /**
    * Constructor
