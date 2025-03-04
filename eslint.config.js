@@ -1,3 +1,4 @@
+import tsdoc from 'eslint-plugin-tsdoc';
 import tseslint from 'typescript-eslint';
 
 /** @type {import('eslint').Linter.Config[]} */
@@ -11,7 +12,19 @@ export default [
   ...tseslint.configs.recommended,
   {
     rules: {
+      // Typescript rules
       '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+
+  {
+    ignores: ['**/*.spec.ts'],
+  },
+  // Configure tsdoc
+  {
+    plugins: { tsdoc },
+    rules: {
+      'tsdoc/syntax': 'error',
     },
   },
 
@@ -20,6 +33,7 @@ export default [
     files: ['**/*.spec.ts'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
+      jsdoc: 'off',
     },
   },
 ];

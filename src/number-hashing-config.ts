@@ -20,8 +20,6 @@ export class NumberHashingConfig {
 
   /**
    * Default configuration.
-   *
-   * @type {NumberHashingConfig}
    */
   static get default(): NumberHashingConfig {
     return new NumberHashingConfig();

@@ -7,7 +7,7 @@
  */
 import ts from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
-import jsdoc from 'eslint-plugin-jsdoc';
+import tsdoc from 'eslint-plugin-tsdoc';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
@@ -31,33 +31,12 @@ export default [
       },
     },
     plugins: {
-      jsdoc,
+      tsdoc,
       '@typescript-eslint': ts,
       ts,
     },
     rules: {
-      // Example JSDoc rules
-      'jsdoc/check-alignment': 'error', // Ensure JSDoc comments are aligned correctly
-      'jsdoc/check-param-names': 'error', // Ensure parameter names match documentation
-      'jsdoc/check-tag-names': 'error', // Ensure JSDoc tags are valid
-      'jsdoc/check-types': 'error', // Ensure type names are valid
-
-      'jsdoc/require-description': 'error',
-      'jsdoc/require-param-type': 'error',
-      'jsdoc/require-returns-type': 'error',
-      'jsdoc/require-jsdoc': [
-        'error',
-        {
-          publicOnly: true,
-          require: {
-            FunctionDeclaration: true,
-            MethodDefinition: true,
-            ClassDeclaration: true,
-            ArrowFunctionExpression: true,
-            FunctionExpression: true,
-          },
-        },
-      ],
+      ...tsdoc.rules,
 
       // Typescript rules
       // ...ts.configs['eslint-recommended'].rules,

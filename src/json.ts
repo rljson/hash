@@ -4,6 +4,8 @@
 // Use of this source code is governed by terms that can be
 // found in the LICENSE file in the root of this package.
 
+import { h } from './hash.ts';
+
 export interface Json {
   [key: string]: JsonValue;
   _hash: string;
@@ -12,3 +14,9 @@ export interface Json {
 export type JsonValue = string | number | boolean | null | Json | JsonArray;
 
 export type JsonArray = Array<JsonValue>;
+
+export const exampleJson = (): Json =>
+  h.applyInPlace({
+    _hash: '',
+    a: '0',
+  });

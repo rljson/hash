@@ -29,8 +29,6 @@ export class Hash {
 
   /**
    * Default instance.
-   *
-   * @type {Hash}
    */
   static get default(): Hash {
     return new Hash();
@@ -40,7 +38,7 @@ export class Hash {
   /**
    * Writes hashes into the JSON object.
    * @param json - The JSON object to hash.
-   * @param [applyConfig=HashApplyToConfig.default] - Options for the operation.
+   * @param applyConfig - Options for the operation.
    * @returns The JSON object with hashes added.
    */
   apply<T extends Json>(json: T, applyConfig?: ApplyConfig): T {
@@ -222,7 +220,10 @@ export class Hash {
    * @param obj - The object to add hashes to.
    * @param applyConfig - Whether to process recursively.
    */
-  private _addHashesToObject(obj: Json, applyConfig: ApplyConfig): void {
+  private _addHashesToObject(
+    obj: Record<string, JsonValue>,
+    applyConfig: ApplyConfig,
+  ): void {
     const updateExisting = applyConfig.updateExistingHashes;
     const throwOnWrongHashes = applyConfig.throwOnWrongHashes;
 
@@ -406,7 +407,7 @@ export class Hash {
   // ...........................................................................
   /**
    * Turns a number into a string with a given precision.
-   * @param {number} value - The number to check.
+   * @param value - The number to check.
    */
   private _checkNumber(value: number): void {
     if (isNaN(value)) {
@@ -435,7 +436,7 @@ export class Hash {
   // ...........................................................................
   /**
    * Checks if a number exceeds the defined range.
-   * @param {number} value - The number to check.
+   * @param value - The number to check.
    * @returns True if the number exceeds the given range, false otherwise.
    */
   private _exceedsUpperRange(value: number): boolean {
@@ -445,7 +446,7 @@ export class Hash {
   // ...........................................................................
   /**
    * Checks if a number exceeds the defined range.
-   * @param {number} value - The number to check.
+   * @param value - The number to check.
    * @returns True if the number exceeds the given range, false otherwise.
    */
   private _exceedsLowerRange(value: number): boolean {
@@ -455,7 +456,7 @@ export class Hash {
   // ...........................................................................
   /**
    * Checks if a number exceeds the precision.
-   * @param {number} value - The number to check.
+   * @param value - The number to check.
    * @returns True if the number exceeds the precision, false otherwise.
    */
   private _exceedsPrecision(value: number): boolean {

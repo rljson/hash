@@ -6,7 +6,7 @@
 
 import { expect, suite, test } from 'vitest';
 
-import { updateGoldens } from '../src/update-goldens';
+import { updateGoldens } from './update-goldens';
 
 suite('updateGoldens', () => {
   test('should be set to false after updating', () => {

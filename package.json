@@ -23,6 +23,7 @@
     "build": "npx vite build && tsc && npx vite-node src/build-readme.ts",
     "prepare": "npm run build",
     "test": "npx eslint && npx vitest run --coverage",
+    "prebuild": "npm run test",
     "prepublishOnly": "npm run build && npm run test"
   },
   "devDependencies": {
@@ -30,7 +31,7 @@
     "@typescript-eslint/parser": "^8.26.0",
     "@vitest/coverage-v8": "^3.0.7",
     "eslint": "^9.21.0",
-    "eslint-plugin-jsdoc": "^50.6.3",
+    "eslint-plugin-tsdoc": "^0.4.0",
     "globals": "^16.0.0",
     "typescript": "~5.7.3",
     "typescript-eslint": "^8.26.0",

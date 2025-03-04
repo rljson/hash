@@ -17,9 +17,9 @@ export class HashConfig {
   // ...........................................................................
   /**
    * Constructor
-   * @param {number} [hashLength=22] - Length of the hash.
-   * @param {string} [hashAlgorithm='SHA-256'] - Algorithm to use for hashing.
-   * @param {NumberHashingConfig} [numberConfig=HashNumberHashingConfig.default] - Configuration for hashing numbers.
+   * @param hashLength - Length of the hash.
+   * @param hashAlgorithm - Algorithm to use for hashing.
+   * @param numberConfig - Configuration for hashing numbers.
    */
   constructor(
     hashLength?: number,
@@ -33,8 +33,6 @@ export class HashConfig {
 
   /**
    * Default configuration.
-   *
-   * @type {HashConfig}
    */
   static get default(): HashConfig {
     return new HashConfig();

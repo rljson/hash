@@ -6,7 +6,7 @@
 
 import { readFile, writeFile } from 'fs/promises';
 
-const buildReadme = async () => {
+export const buildReadme = async () => {
   // Read README.public.md
   const readme = await readFile('README.public.md', 'utf-8');
   const example = await readFile('src/example.ts', 'utf-8');
@@ -17,15 +17,15 @@ const buildReadme = async () => {
   let result = readme.replace(key, example);
 
   // Replace import
-  const importKey = "import { h } from './hash.ts';";
-  console.assert(
-    example.includes(importKey),
-    'example.ts must include ' + importKey,
-  );
-  result = result.replace(importKey, "import { h } from '@rljson/hash.ts';");
+  const importKey = "import { h, Json } from './index.ts';";
+  /* v8 ignore start */
+  if (!example.includes(importKey)) {
+    throw new Error('example.ts must include ' + importKey);
+  }
+  /* v8 ignore stop */
+
+  result = result.replace(importKey, "import { h } from '@rljson/hash';");
 
   //  Write result to dist/README.md
   await writeFile('dist/README.md', result);
 };
-
-await buildReadme();
