@@ -77,6 +77,13 @@ The recommended extensions will be shown.
 
 Make sure, all recommended extensions are shown.
 
+## Uninstall all test extensions, e.g. Jest or Jasmine
+
+Jest or Jasmine extensions conflict with the `Vitest` extension used for this
+project.
+
+Uninstall them, if you have installed them.
+
 ## Debug tests
 
 In Vscode: At the `left side bar` click on the `Test tube` icon to open the `Test explorer`.
@@ -90,3 +97,25 @@ Set a breakpoint.
 Press `alt` and click on the play button left beside the test.
 
 Execution should stop at the breakpoint.
+
+## Update goldens
+
+In various tests we are creating golden files, that are reference files that
+are compared against the files created in the tests.
+
+If change is detected, the fest fail.
+
+An example is `test/goldens/README.md` which is compared against
+`dist/README.md`.
+
+If the changes are desired, update the golden files:
+
+Open `update-goldens.ts`
+
+Set `export const updateGoldens` to `true`
+
+Run tests again.
+
+Set `export const updateGoldens` to `false`.
+
+Run tests again.
