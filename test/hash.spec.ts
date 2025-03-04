@@ -7,13 +7,13 @@
 import { beforeEach, expect, suite, test } from 'vitest';
 
 import { ApplyConfig } from '../src/apply-config';
-import { JsonHash } from '../src/json-hash';
+import { Hash } from '../src/hash';
 
-suite('JsonHash', () => {
-  let jh = JsonHash.default;
+suite('Hash', () => {
+  let jh = Hash.default;
 
   beforeEach(() => {
-    jh = new JsonHash();
+    jh = new Hash();
   });
 
   suite('apply(json)', () => {
@@ -822,7 +822,7 @@ suite('JsonHash', () => {
   });
 
   suite('copyJson', () => {
-    const copyJson = JsonHash.copyJson;
+    const copyJson = Hash.copyJson;
 
     test('empty json', () => {
       expect(copyJson({})).toEqual({});
@@ -904,7 +904,7 @@ suite('JsonHash', () => {
   });
 
   suite('isBasicType', () => {
-    const isBasicType = JsonHash.isBasicType;
+    const isBasicType = Hash.isBasicType;
 
     test('returns true if type is a basic type', () => {
       expect(isBasicType(1)).toEqual(true);
@@ -917,7 +917,7 @@ suite('JsonHash', () => {
   });
 
   suite('jsonString(map)', () => {
-    const jsonString = JsonHash.jsonString;
+    const jsonString = Hash.jsonString;
 
     test('converts a map into a json string', () => {
       expect(jsonString({ a: 1 })).toEqual('{"a":1}');

@@ -36,7 +36,7 @@ import 'package:gg_json_hash/gg_json_hash.dart';
 import 'dart:convert';
 
 void main() {
-  var jh = JsonHash.defaultInstance;
+  var jh = Hash.defaultInstance;
 
   // ...........................................................................
   print('Create a json structure');
@@ -62,7 +62,7 @@ void main() {
     numberConfig: NumberHashingConfig.defaultConfig.copyWith(precision: 0.001),
   );
 
-  jh = JsonHash(config: config);
+  jh = Hash(config: config);
 
   try {
     jh.apply({
@@ -76,7 +76,7 @@ void main() {
   print('Use the "inPlace" option to modify the input object directly.');
 
   json = {'a': 1, 'b': 2};
-  var ac = ApplyJsonHashConfig.defaultConfig.copyWith(inPlace: true);
+  var ac = ApplyHashConfig.defaultConfig.copyWith(inPlace: true);
 
   jh.apply(json, applyConfig: ac);
   assert(json['_hash'] == 'QyWM_3g_5wNtikMDP4MK38');

@@ -6,5 +6,5 @@
 
 export { ApplyConfig } from './apply-config.ts';
 export { HashConfig } from './hash-config.ts';
-export { jh, JsonHash } from './json-hash.ts';
+export { Hash, h as jh } from './hash.ts';
 export { NumberHashingConfig } from './number-hashing-config.ts';
