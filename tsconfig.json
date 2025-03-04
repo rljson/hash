@@ -31,5 +31,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["./src/", "test/update-goldens.ts"]
+  "include": ["./src/"]
 }
