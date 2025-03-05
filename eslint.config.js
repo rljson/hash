@@ -17,11 +17,9 @@ export default [
     },
   },
 
-  {
-    ignores: ['**/*.spec.ts'],
-  },
   // Configure tsdoc
   {
+    files: ['src/**/*.ts'],
     plugins: { tsdoc },
     rules: {
       'tsdoc/syntax': 'error',
