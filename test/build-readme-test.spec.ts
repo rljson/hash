@@ -19,7 +19,7 @@ describe('buildReadme()', () => {
     // Remove existing file
     try {
       await rm(path);
-    } catch (_) {}
+    } catch {}
 
     // Run buildReadme
     await buildReadme();

@@ -651,7 +651,6 @@ describe('Hash', () => {
 
           /**
            * val: number
-           * @returns {void}
            */
           function check(val: number) {
             let message = '';

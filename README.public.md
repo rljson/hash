@@ -31,6 +31,4 @@ Hashing nested JSON objects makes sense for several key reasons:
 
 ## Example
 
-```typescript
-/// EXAMPLE
-```
+[src/example.ts](src/example.ts)

@@ -12,9 +12,12 @@ export const buildReadme = async () => {
   const example = await readFile('src/example.ts', 'utf-8');
 
   // Insert example.ts into README
-  const key = '/// EXAMPLE';
+  const key = '[src/example.ts](src/example.ts)';
   console.assert(readme.includes(key), 'README.public.md must include ' + key);
-  let result = readme.replace(key, example);
+  let result = readme.replace(
+    key,
+    ['```typescript', example, '```'].join('\n'),
+  );
 
   // Replace import
   const importKey = "import { h, Json } from './index.ts';";
@@ -30,9 +33,9 @@ export const buildReadme = async () => {
   /* v8 ignore start */
   try {
     await mkdir('dist');
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (_: unknown) {}
+  } catch {
+  } finally {
+  }
   /* v8 ignore stop */
 
   //  Write result to dist/README.md
