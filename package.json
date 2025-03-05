@@ -4,7 +4,7 @@
   "description": "Deeply apply hashes to JSON data",
   "homepage": "https://github.com/rljson/hash",
   "bugs": "https://github.com/rljson/hash/issues",
-  "private": false,
+  "access": "public",
   "license": "MIT",
   "engines": {
     "node": ">=22.14.0"
@@ -23,7 +23,7 @@
     "build": "npx vite build && tsc && npx vite-node src/build-readme.ts",
     "test": "npx vitest run --coverage && npm run lint",
     "prebuild": "npm run test",
-    "prepublishOnly": "npm run build && npm run test",
+    "prepublishOnly": "npm run build",
     "lint": "npx eslint"
   },
   "devDependencies": {
