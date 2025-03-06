@@ -60,6 +60,14 @@ Make publish dry-run
 npm publish --access=public --dry-run
 ```
 
+Check the changes to uploaded
+
+Publish the package
+
+```bash
+npm publish --access=public
+```
+
 ## Architecture
 
 Reade [README.architecture.md](./README.architecture.md) to get an overview
