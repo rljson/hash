@@ -6,6 +6,8 @@
 
 import { mkdir, readFile, writeFile } from 'fs/promises';
 
+const importKey = "import { Hash, hip, hsh, Json } from './index.ts';";
+
 export const buildReadme = async () => {
   // Read README.public.md
   const readme = await readFile('README.public.md', 'utf-8');
@@ -20,7 +22,7 @@ export const buildReadme = async () => {
   );
 
   // Replace import
-  const importKey = "import { h, Json } from './index.ts';";
+
   /* v8 ignore start */
   if (!example.includes(importKey)) {
     throw new Error('example.ts must include ' + importKey);
