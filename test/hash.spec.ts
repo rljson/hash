@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { Json } from '../src';
 import { defaultApplyConfig } from '../src/apply-config';
-import { Hash } from '../src/hash';
+import { Hash, hip, hsh } from '../src/hash';
 
 describe('Hash', () => {
   let jh = Hash.default;
@@ -1296,6 +1296,26 @@ describe('Hash', () => {
 
         expect(json['_hash']).toBe('W4CAuZT_tIicr6crbn6LA8');
       });
+    });
+  });
+
+  describe('hip', () => {
+    it('writes hashes in place and returns the json', () => {
+      const x = { a: { b: 1 } };
+      const xHashed = hip(x);
+      expect(x).toBe(xHashed);
+      expect(xHashed._hash).toBe('aGyCrR_fCrzMa6oP_6N50z');
+      expect(xHashed.a._hash).toBe('647TzLUCMJO1b0kKRlAeiN');
+    });
+  });
+
+  describe('hsh', () => {
+    it('remains the original object unchanged and returns a copy with hashes', () => {
+      const x = { a: { b: 1 } };
+      const xHashed = hsh(x);
+      expect(x).toEqual({ a: { b: 1 } });
+      expect(xHashed._hash).toBe('aGyCrR_fCrzMa6oP_6N50z');
+      expect(xHashed.a._hash).toBe('647TzLUCMJO1b0kKRlAeiN');
     });
   });
 });

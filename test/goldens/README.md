@@ -40,6 +40,7 @@ import { h } from '@rljson/hash';
 export const example = () => {
   const print = console.log;
   const assert = console.assert;
+  const h = Hash.default;
 
   // .............................................................................
   print('Create a json structure');
@@ -57,7 +58,7 @@ export const example = () => {
 
   // .............................................................................
   print('Add hashes to the json structure.');
-  json = h.apply(json);
+  json = hsh(json);
   print(JSON.stringify(json, null, 2));
 
   // {
@@ -73,23 +74,22 @@ export const example = () => {
 
   // .............................................................................
   print('Set a maximum floating point precision.');
-  h.config.numberConfig.precision = 0.001;
 
   try {
-    h.apply({
-      a: 1.000001,
+    hsh({
+      a: 1.0000000001,
       _hash: '',
     });
   } catch (e: unknown) {
-    print((e as Error).message); // Number 1.000001 has a higher precision than 0.001
+    print((e as Error).message); // Number 1.0000000001 has a higher precision than 0.001
   }
 
   // .............................................................................
-  print('Use the "inPlace" option to modify the input object directly.');
+  print('Use hash to modify the input object directly.');
 
   json = { a: 1, b: 2, _hash: '' };
 
-  h.apply(json, { inPlace: true });
+  hip(json);
   assert(json._hash, 'QyWM_3g_5wNtikMDP4MK38');
 
   // .............................................................................
@@ -106,7 +106,7 @@ export const example = () => {
     _hash: '',
   };
 
-  const result = h.apply(json, {
+  const result = hsh(json, {
     updateExistingHashes: false,
     throwOnWrongHashes: false,
   }) as any;
@@ -126,14 +126,15 @@ export const example = () => {
 
   // .............................................................................
   print('Set "throwOnWrongHashes" to false to replace invalid hashes.');
-  json = h.apply({ a: 1, _hash: 'invalid' }, { throwOnWrongHashes: false });
+  json = hsh({ a: 1, _hash: 'invalid' }, { throwOnWrongHashes: false });
   print(json._hash); // AVq9f1zFei3ZS3WQ8ErYCE
 
   // .............................................................................
   print('Use validate to check if the hashes are correct');
 
   json = { a: 1, b: 2, _hash: '' };
-  json = h.apply(json);
+  json = hsh(json);
+
   h.validate(json); // true
 
   try {

@@ -1,0 +1,22 @@
+Create a json structure
+Add hashes to the json structure.
+{
+  "a": "0",
+  "b": "1",
+  "child": {
+    "d": 3,
+    "e": 4,
+    "_hash": "nfTEHYDoqVPb3ieJSmBxft"
+  },
+  "_hash": "k-3v5I-Q6Q9vPdVJxsMYUk"
+}
+Set a maximum floating point precision.
+Number 1.0000000001 has a higher precision than 0.001.
+Use hash to modify the input object directly.
+Set "upateExistingHashes: false" to create missing hashes but without touching existing ones.
+If existing hashes do not match new ones, an error is thrown.
+Hash "invalid" does not match the newly calculated one "AVq9f1zFei3ZS3WQ8ErYCE". Please make sure that all systems are producing the same hashes.
+Set "throwOnWrongHashes" to false to replace invalid hashes.
+invalid
+Use validate to check if the hashes are correct
+Hash "invalid" is wrong. Should be "cHeM4BrY0agsgKNQC-5Hbz".

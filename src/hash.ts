@@ -4,12 +4,13 @@
 // Use of this source code is governed by terms that can be
 // found in the LICENSE file in the root of this package.
 import { Sha256 } from '@aws-crypto/sha256-js';
+import { Json, JsonArray, JsonValue } from '@rljson/json';
+import { Hashed } from '@rljson/json/dist/json.js';
 
 import { fromUint8Array } from 'js-base64';
 
 import { ApplyConfig, defaultApplyConfig } from './apply-config.ts';
 import { HashConfig } from './hash-config.ts';
-import { Json, JsonArray, JsonValue } from './json.ts';
 
 // .............................................................................
 /**
@@ -41,7 +42,7 @@ export class Hash {
    * @param applyConfig - Options for the operation.
    * @returns The JSON object with hashes added.
    */
-  apply<T extends Json>(json: T, applyConfig?: ApplyConfig): T {
+  apply<T extends Json>(json: T, applyConfig?: ApplyConfig): Hashed<T> {
     applyConfig = applyConfig ?? defaultApplyConfig();
     const copy = applyConfig.inPlace ? json : Hash._copyJson(json);
     this._addHashesToObject(copy, applyConfig);
@@ -49,7 +50,7 @@ export class Hash {
     if (applyConfig.throwOnWrongHashes) {
       this.validate(copy as Json);
     }
-    return copy as T;
+    return copy as Hashed<T>;
   }
 
   // ...........................................................................
@@ -57,14 +58,14 @@ export class Hash {
     json: T,
     updateExistingHashes: boolean = false,
     throwOnWrongHashes: boolean = true,
-  ): T {
+  ): Hashed<T> {
     const applyConfig: ApplyConfig = {
       inPlace: true,
       updateExistingHashes,
       throwOnWrongHashes,
     };
 
-    return this.apply(json, applyConfig) as T;
+    return this.apply(json, applyConfig);
   }
 
   // ...........................................................................
@@ -506,6 +507,11 @@ export class Hash {
 }
 
 /**
- * A shortcut to a default instance
+ * Writes hashes inplace into a JSON object.
  */
-export const h = Hash.default;
+export const hip = Hash.default.applyInPlace.bind(Hash.default);
+
+/**
+ * Returns a hashed version of a JSON object
+ */
+export const hsh = Hash.default.apply.bind(Hash.default);
