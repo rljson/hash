@@ -3,7 +3,6 @@ import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 
-
 export default defineConfig({
   plugins: [dts({ include: ['src/*'] })],
 
@@ -17,7 +16,7 @@ export default defineConfig({
       formats: ['es'],
     },
     rollupOptions: {
-      external: ['js-base64', '@aws-crypto/sha256-js'],
+      external: ['js-base64', '@aws-crypto/sha256-js', '@rljson/rljson'],
       output: {
         globals: {},
       },
