@@ -32,6 +32,7 @@
     "@typescript-eslint/eslint-plugin": "^8.26.0",
     "@typescript-eslint/parser": "^8.26.0",
     "@vitest/coverage-v8": "^3.0.7",
+    "cross-env": "^7.0.3",
     "eslint": "^9.21.0",
     "eslint-plugin-jsdoc": "^50.6.3",
     "eslint-plugin-tsdoc": "^0.4.0",
@@ -47,7 +48,7 @@
   },
   "peerDependencies": {
     "@aws-crypto/sha256-js": "^5.2.0",
-    "js-base64": "^3.7.7",
-    "@rljson/hash": "^0.0.3"
+    "@rljson/hash": "^0.0.3",
+    "js-base64": "^3.7.7"
   }
 }
