@@ -137,6 +137,7 @@ export class Hash {
 
   /**
    * Checks an basic type. Throws an error if the type is not supported.
+   * @param value - The value to check.
    */
   checkBasicType = (value: any) => this._checkBasicType(value);
 

@@ -6,7 +6,7 @@
 
 import { mkdir, readFile, writeFile } from 'fs/promises';
 
-const importKey = "import { Hash, hip, hsh, Json } from './index.ts';";
+const importKey = "import { Hash, hip, hsh } from './index.ts';";
 
 export const buildReadme = async () => {
   // Read README.public.md

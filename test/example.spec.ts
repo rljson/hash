@@ -9,7 +9,7 @@ import { describe, expect, it } from 'vitest';
 
 import { example } from '../src/example';
 
-import { updateGoldens } from './update-goldens';
+import { updateGoldens } from './setup/goldens';
 
 describe('example', () => {
   it('should run without error', async () => {
@@ -21,7 +21,7 @@ describe('example', () => {
 
     // Write golden file
     const logFilePath = 'test/goldens/example.log';
-    if (updateGoldens) {
+    if (updateGoldens()) {
       await writeFile(logFilePath, logMessages.join('\n'));
     }
 
