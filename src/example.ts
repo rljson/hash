@@ -1,4 +1,6 @@
-import { Hash, hip, hsh, Json } from './index.ts';
+import { Json } from '@rljson/hash';
+
+import { Hash, hip, hsh } from './index.ts';
 
 /**
  * The example function demonstrates how to use rljson/hash
