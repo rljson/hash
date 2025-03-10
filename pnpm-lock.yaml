@@ -11,9 +11,9 @@ importers:
       '@aws-crypto/sha256-js':
         specifier: ^5.2.0
         version: 5.2.0
-      '@rljson/hash':
-        specifier: ^0.0.3
-        version: 0.0.3(@aws-crypto/sha256-js@5.2.0)(@rljson/json@0.0.2)(js-base64@3.7.7)
+      '@rljson/json':
+        specifier: ^0.0.2
+        version: 0.0.2
       js-base64:
         specifier: ^3.7.7
         version: 3.7.7
@@ -378,14 +378,6 @@ packages:
   '@pkgr/core@0.1.1':
     resolution: {integrity: sha512-cq8o4cWH0ibXh9VGi5P20Tu9XF/0fFXl9EUinr9QfTM7a7p0oTA4iJRCQWppXR1Pg8dSM0UCItCkPwsk9qWWYA==}
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
-
-  '@rljson/hash@0.0.3':
-    resolution: {integrity: sha512-KWoofwhO/nw/ZB6nsePWcyrSoAx4OqiFuYprMr0KzIZWUYd6Vciq/eHU7a4VuTeBNrNzt8aiTcYTYPgeqlqsHQ==}
-    engines: {node: '>=22.14.0'}
-    peerDependencies:
-      '@aws-crypto/sha256-js': ^5.2.0
-      '@rljson/json': ^0.0.2
-      js-base64: ^3.7.7
 
   '@rljson/json@0.0.2':
     resolution: {integrity: sha512-51VQRbt6EnDETgcJPpbasfeg8s1HkUA3V0hQHA89B1s6CCSDIUkl24cdy0z1pWfyX3SawOf3Mwx+onPinixbVg==}
@@ -1857,12 +1849,6 @@ snapshots:
     optional: true
 
   '@pkgr/core@0.1.1': {}
-
-  '@rljson/hash@0.0.3(@aws-crypto/sha256-js@5.2.0)(@rljson/json@0.0.2)(js-base64@3.7.7)':
-    dependencies:
-      '@aws-crypto/sha256-js': 5.2.0
-      '@rljson/json': 0.0.2
-      js-base64: 3.7.7
 
   '@rljson/json@0.0.2': {}
 
