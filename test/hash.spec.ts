@@ -4,9 +4,10 @@
 // Use of this source code is governed by terms that can be
 // found in the LICENSE file in the root of this package.
 
+import { Json } from '@rljson/json';
+
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { Json } from '../src';
 import { defaultApplyConfig } from '../src/apply-config';
 import { Hash, hip, hsh } from '../src/hash';
 
@@ -821,101 +822,6 @@ describe('Hash', () => {
       expect(jsonString).toEqual(
         '{"key":"value","_hash":"5Dq88zdSRIOcAS-WM_lYYt"}',
       );
-    });
-  });
-
-  describe('copyJson', () => {
-    const copyJson = Hash.copyJson;
-
-    it('empty json', () => {
-      expect(copyJson({})).toEqual({});
-    });
-
-    it('simple value', () => {
-      expect(copyJson({ a: 1 })).toEqual({ a: 1 });
-    });
-
-    it('nested value', () => {
-      expect(
-        copyJson({
-          a: { b: 1 },
-        }),
-      ).toEqual({
-        a: { b: 1 },
-      });
-    });
-
-    it('list value', () => {
-      expect(
-        copyJson({
-          a: [1, 2],
-        }),
-      ).toEqual({
-        a: [1, 2],
-      });
-    });
-
-    it('list with list', () => {
-      expect(
-        copyJson({
-          a: [[1, 2]],
-        }),
-      ).toEqual({
-        a: [[1, 2]],
-      });
-    });
-
-    it('list with map', () => {
-      expect(
-        copyJson({
-          a: [{ b: 1 }],
-        }),
-      ).toEqual({
-        a: [{ b: 1 }],
-      });
-    });
-
-    describe('throws', () => {
-      describe('on unsupported type', () => {
-        it('in map', () => {
-          let message;
-          try {
-            copyJson({
-              a: new Error(),
-            });
-          } catch (e: any) {
-            message = e.toString();
-          }
-
-          expect(message).toEqual('Error: Unsupported type: object');
-        });
-
-        it('in list', () => {
-          let message;
-          try {
-            copyJson({
-              a: [new Error()],
-            });
-          } catch (e: any) {
-            message = e.toString();
-          }
-
-          expect(message).toEqual('Error: Unsupported type: object');
-        });
-      });
-    });
-  });
-
-  describe('isBasicType', () => {
-    const isBasicType = Hash.isBasicType;
-
-    it('returns true if type is a basic type', () => {
-      expect(isBasicType(1)).toEqual(true);
-      expect(isBasicType(1.0)).toEqual(true);
-      expect(isBasicType('1')).toEqual(true);
-      expect(isBasicType(true)).toEqual(true);
-      expect(isBasicType(false)).toEqual(true);
-      expect(isBasicType(new Set())).toEqual(false);
     });
   });
 
