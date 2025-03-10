@@ -4,7 +4,7 @@
 // Use of this source code is governed by terms that can be
 // found in the LICENSE file in the root of this package.
 import { Sha256 } from '@aws-crypto/sha256-js';
-import { Json, JsonArray, JsonValue } from '@rljson/json';
+import { copy, isBasicType, Json, JsonArray, JsonValue } from '@rljson/json';
 import { Hashed } from '@rljson/json/dist/json.js';
 
 import { fromUint8Array } from 'js-base64';
@@ -44,13 +44,13 @@ export class Hash {
    */
   apply<T extends Json>(json: T, applyConfig?: ApplyConfig): Hashed<T> {
     applyConfig = applyConfig ?? defaultApplyConfig();
-    const copy = applyConfig.inPlace ? json : Hash._copyJson(json);
-    this._addHashesToObject(copy, applyConfig);
+    json = applyConfig.inPlace ? json : copy(json);
+    this._addHashesToObject(json, applyConfig);
 
     if (applyConfig.throwOnWrongHashes) {
-      this.validate(copy as Json);
+      this.validate(json as Json);
     }
-    return copy as Hashed<T>;
+    return json as Hashed<T>;
   }
 
   // ...........................................................................
@@ -111,22 +111,6 @@ export class Hash {
     this._validate(json, jsonWithCorrectHashes, '');
     return json;
   }
-
-  // ...........................................................................
-  /**
-   * Copies the JSON object.
-   */
-  static copyJson = Hash._copyJson;
-
-  /**
-   * Copies the list deeply
-   */
-  static copyList = Hash._copyList;
-
-  /**
-   * Returns the value when it is a basic type. Otherwise throws an error.
-   */
-  static isBasicType = Hash._isBasicType;
 
   /**
    * Converts a map to a JSON string.
@@ -263,7 +247,7 @@ export class Hash {
         objToHash[key] = value['_hash'];
       } else if (Array.isArray(value)) {
         objToHash[key] = this._flattenList(value);
-      } else if (Hash._isBasicType(value)) {
+      } else if (isBasicType(value)) {
         objToHash[key] = this._checkBasicType(value);
       }
     }
@@ -318,7 +302,7 @@ export class Hash {
         flattenedList.push(element['_hash']);
       } else if (Array.isArray(element)) {
         flattenedList.push(this._flattenList(element));
-      } else if (Hash._isBasicType(element)) {
+      } else if (isBasicType(element)) {
         flattenedList.push(this._checkBasicType(element));
       }
     }
@@ -342,68 +326,6 @@ export class Hash {
         this._processList(element, applyConfig);
       }
     }
-  }
-
-  // ...........................................................................
-  /**
-   * Copies the JSON object.
-   * @param json - The JSON object to copy.
-   * @returns The copied JSON object.
-   */
-  private static _copyJson(json: Record<string, any>): Record<string, any> {
-    const copy: Record<string, any> = {};
-    for (const [key, value] of Object.entries(json)) {
-      if (value === null) {
-        copy[key] = null;
-      } else if (Array.isArray(value)) {
-        copy[key] = Hash._copyList(value);
-      } else if (Hash._isBasicType(value)) {
-        copy[key] = value;
-      } else if (value.constructor === Object) {
-        copy[key] = Hash._copyJson(value);
-      } else {
-        throw new Error(`Unsupported type: ${typeof value}`);
-      }
-    }
-    return copy;
-  }
-
-  // ...........................................................................
-  /**
-   * Copies the list.
-   * @param list - The list to copy.
-   * @returns The copied list.
-   */
-  private static _copyList(list: Array<any>): Array<any> {
-    const copy: Array<any> = [];
-    for (const element of list) {
-      if (element == null) {
-        copy.push(null);
-      } else if (Array.isArray(element)) {
-        copy.push(Hash._copyList(element));
-      } else if (Hash._isBasicType(element)) {
-        copy.push(element);
-      } else if (element.constructor === Object) {
-        copy.push(Hash._copyJson(element));
-      } else {
-        throw new Error(`Unsupported type: ${typeof element}`);
-      }
-    }
-    return copy;
-  }
-
-  // ...........................................................................
-  /**
-   * Checks if a value is a basic type.
-   * @param value - The value to check.
-   * @returns True if the value is a basic type, false otherwise.
-   */
-  private static _isBasicType(value: any): boolean {
-    return (
-      typeof value === 'string' ||
-      typeof value === 'number' ||
-      typeof value === 'boolean'
-    );
   }
 
   // ...........................................................................
