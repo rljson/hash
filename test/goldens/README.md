@@ -32,9 +32,10 @@ Hashing nested JSON objects makes sense for several key reasons:
 ## Example
 
 ```typescript
-import { Json } from '@rljson/hash';
+import { Json } from '@rljson/json';
 
 import { h } from '@rljson/hash';
+
 
 /**
  * The example function demonstrates how to use rljson/hash
