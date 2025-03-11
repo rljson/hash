@@ -1,6 +1,6 @@
 {
   "name": "@rljson/hash",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "packageManager": "pnpm@10.6.2",
   "description": "Deeply apply hashes to JSON data",
   "homepage": "https://github.com/rljson/hash",
@@ -35,10 +35,10 @@
     "@vitest/coverage-v8": "^3.0.8",
     "cross-env": "^7.0.3",
     "eslint": "^9.22.0",
-    "eslint-plugin-jsdoc": "^50.6.3",
+    "eslint-plugin-jsdoc": "^50.6.6",
     "eslint-plugin-tsdoc": "^0.4.0",
     "globals": "^16.0.0",
-    "typescript": "~5.7.3",
+    "typescript": "~5.8.2",
     "typescript-eslint": "^8.26.1",
     "vite": "^6.2.1",
     "vite-node": "^3.0.8",
@@ -49,7 +49,7 @@
   },
   "peerDependencies": {
     "@aws-crypto/sha256-js": "^5.2.0",
-    "@rljson/json": "^0.0.4",
+    "@rljson/json": "^0.0.5",
     "js-base64": "^3.7.7"
   },
   "pnpm": {
