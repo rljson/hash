@@ -101,14 +101,19 @@ export class Hash {
   // ...........................................................................
   /**
    * Throws if hashes are not correct.
-   * @param json - The JSON object to validate.
+   * @param json - to be validated
+   * @param config - validation options
+   * @param config.ignoreMissingHashes - ignore missing or empty hashes
    */
-  validate<T extends Json>(json: T): T {
+  validate<T extends Json>(
+    json: T,
+    config: { ignoreMissingHashes: boolean } = { ignoreMissingHashes: false },
+  ): T {
     // Check the hash of the high level element
     const ac = defaultApplyConfig();
     ac.throwOnWrongHashes = false;
     const jsonWithCorrectHashes = this.apply(json as Json, ac);
-    this._validate(json, jsonWithCorrectHashes, '');
+    this._validate(json, jsonWithCorrectHashes, '', config.ignoreMissingHashes);
     return json;
   }
 
@@ -130,23 +135,24 @@ export class Hash {
   // ######################
 
   // ...........................................................................
-  /**
-   * Validates the hashes of the JSON object.
-   * @param jsonIs - The JSON object to check.
-   * @param jsonShould - The JSON object with correct hashes.
-   * @param path - The current path in the JSON object.
-   */
-  private _validate(jsonIs: Json, jsonShould: Json, path: string): void {
+  private _validate(
+    jsonIs: Json,
+    jsonShould: Json,
+    path: string,
+    ignoreMissingHashes: boolean,
+  ): void {
     // Check the hashes of the parent element
     const expectedHash = jsonShould['_hash'];
     const actualHash = jsonIs['_hash'];
 
-    if (actualHash == null) {
+    // Hash is not empty
+    if (!actualHash && !ignoreMissingHashes) {
       const pathHint = path ? ` at ${path}` : '';
       throw new Error(`Hash${pathHint} is missing.`);
     }
 
-    if (expectedHash !== actualHash) {
+    // Hash is given?
+    else if (actualHash && expectedHash !== actualHash) {
       const pathHint = path ? ` at ${path}` : '';
       throw new Error(
         `Hash${pathHint} "${actualHash}" is wrong. Should be "${expectedHash}".`,
@@ -163,7 +169,12 @@ export class Hash {
       ) {
         const childIs = value;
         const childShould = jsonShould[key];
-        this._validate(childIs, childShould as Json, `${path}/${key}`);
+        this._validate(
+          childIs,
+          childShould as Json,
+          `${path}/${key}`,
+          ignoreMissingHashes,
+        );
       } else if (Array.isArray(value)) {
         for (let i = 0; i < value.length; i++) {
           if (typeof value[i] === 'object' && !Array.isArray(value[i])) {
@@ -172,7 +183,12 @@ export class Hash {
               continue;
             }
             const itemShould = (jsonShould[key] as JsonArray)[i] as Json;
-            this._validate(itemIs as Json, itemShould, `${path}/${key}/${i}`);
+            this._validate(
+              itemIs as Json,
+              itemShould,
+              `${path}/${key}/${i}`,
+              ignoreMissingHashes,
+            );
           }
         }
       }

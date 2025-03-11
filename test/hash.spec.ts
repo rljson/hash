@@ -918,13 +918,39 @@ describe('Hash', () => {
         });
       });
 
-      describe('does not throw', () => {
+      describe('throws not', () => {
         it('when hash is correct', () => {
           expect(() =>
             jh.validate({
               _hash: 'RBNvo1WzZ4oRRq0W9-hknp',
             }),
           ).not.toThrow();
+        });
+
+        describe('when hash is missing and "ignoreMissingHashes" is true', () => {
+          it('with hash missing', () => {
+            expect(() =>
+              jh.validate({ key: 'value' }, { ignoreMissingHashes: true }),
+            ).not.toThrow();
+          });
+
+          it('with hash being null', () => {
+            expect(() =>
+              jh.validate(
+                { key: 'value', _hash: null },
+                { ignoreMissingHashes: true },
+              ),
+            ).not.toThrow();
+          });
+
+          it('with hash being empty', () => {
+            expect(() =>
+              jh.validate(
+                { key: 'value', _hash: '' },
+                { ignoreMissingHashes: true },
+              ),
+            ).not.toThrow();
+          });
         });
 
         it('returns the valid object unchanged', () => {
