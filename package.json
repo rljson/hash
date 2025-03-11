@@ -47,7 +47,7 @@
     "vitest": "^3.0.8",
     "vitest-dom": "^0.1.1"
   },
-  "peerDependencies": {
+  "dependencies": {
     "@aws-crypto/sha256-js": "^5.2.0",
     "@rljson/json": "^0.0.7",
     "js-base64": "^3.7.7"
