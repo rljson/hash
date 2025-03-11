@@ -1,6 +1,6 @@
 {
   "name": "@rljson/hash",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "packageManager": "pnpm@10.6.2",
   "description": "Deeply apply hashes to JSON data",
   "homepage": "https://github.com/rljson/hash",
