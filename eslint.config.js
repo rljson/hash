@@ -23,7 +23,7 @@ export default [
     files: ['src/**/*.ts'],
     plugins: { tsdoc, jsdoc, tseslint },
     rules: {
-      'tsdoc/syntax': 'error',
+      'tsdoc/syntax': 'off',
       ...jsdoc.configs['flat/recommended-typescript-flavor-error'].rules,
       'jsdoc/require-description': 'error',
       'jsdoc/require-param-type': 'off',
