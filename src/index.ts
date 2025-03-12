@@ -4,7 +4,7 @@
 // Use of this source code is governed by terms that can be
 // found in the LICENSE file in the root of this package.
 
-export { type ApplyConfig } from './apply-config.ts';
-export { HashConfig } from './hash-config.ts';
-export { Hash, hip, hsh } from './hash.ts';
-export { NumberHashingConfig } from './number-hashing-config.ts';
+export * from './apply-config.ts';
+export * from './hash-config.ts';
+export * from './hash.ts';
+export * from './number-hashing-config.ts';

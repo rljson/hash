@@ -9,7 +9,7 @@ import { Json } from '@rljson/json';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { defaultApplyConfig } from '../src/apply-config';
-import { Hash, hip, hsh } from '../src/hash';
+import { Hash, hip, hsh, rmhip, rmhsh } from '../src/hash';
 
 describe('Hash', () => {
   let jh = Hash.default;
@@ -1248,6 +1248,115 @@ describe('Hash', () => {
       expect(x).toEqual({ a: { b: 1 } });
       expect(xHashed._hash).toBe('aGyCrR_fCrzMa6oP_6N50z');
       expect(xHashed.a._hash).toBe('647TzLUCMJO1b0kKRlAeiN');
+    });
+  });
+  describe('rmhip', () => {
+    it('removes hashes from a JSON object in place', () => {
+      const json = {
+        key: 'value',
+        _hash: 'someHash',
+        nested: {
+          key: 'value',
+          _hash: 'nestedHash',
+        },
+      };
+
+      const result = rmhip(json);
+      expect(result).toEqual({
+        key: 'value',
+        nested: {
+          key: 'value',
+        },
+      });
+    });
+
+    it('handles arrays correctly', () => {
+      const json = {
+        key: 'value',
+        _hash: 'someHash',
+        array: [
+          {
+            key: 'value',
+            _hash: 'arrayHash',
+          },
+        ],
+      };
+
+      const result = rmhip(json);
+      expect(result).toEqual({
+        key: 'value',
+        array: [
+          {
+            key: 'value',
+          },
+        ],
+      });
+    });
+  });
+
+  describe('rmhsh', () => {
+    it('removes hashes from a copied JSON object', () => {
+      const json = {
+        key: 'value',
+        _hash: 'someHash',
+        nested: {
+          key: 'value',
+          _hash: 'nestedHash',
+        },
+      };
+
+      const result = rmhsh(json);
+      expect(result).toEqual({
+        key: 'value',
+        nested: {
+          key: 'value',
+        },
+      });
+
+      // Ensure the original object is untouched
+      expect(json).toEqual({
+        key: 'value',
+        _hash: 'someHash',
+        nested: {
+          key: 'value',
+          _hash: 'nestedHash',
+        },
+      });
+    });
+
+    it('handles arrays correctly', () => {
+      const json = {
+        key: 'value',
+        _hash: 'someHash',
+        array: [
+          {
+            key: 'value',
+            _hash: 'arrayHash',
+          },
+        ],
+      };
+
+      const result = rmhsh(json);
+      expect(result).toEqual({
+        key: 'value',
+        array: [
+          {
+            key: 'value',
+          },
+        ],
+      });
+
+      // Ensure the original object is untouched
+      expect(json).toEqual({
+        key: 'value',
+        _hash: 'someHash',
+        array: [
+          {
+            key: 'value',
+            _hash: 'arrayHash',
+          },
+        ],
+      });
     });
   });
 });

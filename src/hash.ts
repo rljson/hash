@@ -454,3 +454,26 @@ export const hip = Hash.default.applyInPlace.bind(Hash.default);
  * Returns a hashed version of a JSON object
  */
 export const hsh = Hash.default.apply.bind(Hash.default);
+
+/**
+ * Removes hashes from a JSON object in place.
+ * @param json - The JSON object to remove hashes from.
+ */
+export const rmhip = (json: Json) => {
+  delete (json as any)._hash;
+  for (const key in json) {
+    if (json[key] !== null && typeof json[key] === 'object') {
+      rmhip(json[key] as Json);
+    }
+  }
+  return json;
+};
+
+/**
+ * Copies a json object and removes the hashes.
+ * @param json - The JSON object to remove hashes from.
+ */
+export const rmhsh = (json: Json) => {
+  json = copy(json);
+  return rmhip(json);
+};
