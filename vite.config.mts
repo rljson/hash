@@ -9,14 +9,14 @@ export default defineConfig({
   build: {
     copyPublicDir: false,
     minify: false,
-    // sourcemap: 'inline',
+    sourcemap: 'inline',
 
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       formats: ['es'],
     },
     rollupOptions: {
-      external: ['js-base64', '@aws-crypto/sha256-js', '@rljson/rljson'],
+      external: ['js-base64', '@aws-crypto/sha256-js', '@rljson/json'],
       output: {
         globals: {},
       },
