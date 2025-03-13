@@ -445,6 +445,8 @@ export class Hash {
   }
 }
 
+// .............................................................................
+
 /**
  * Writes hashes inplace into a JSON object.
  */
@@ -455,25 +457,26 @@ export const hip = Hash.default.applyInPlace.bind(Hash.default);
  */
 export const hsh = Hash.default.apply.bind(Hash.default);
 
+// .............................................................................
 /**
  * Removes hashes from a JSON object in place.
  * @param json - The JSON object to remove hashes from.
  */
-export const rmhip = (json: Json) => {
+const _rmhip = <T extends Json>(json: T): T => {
   delete (json as any)._hash;
   for (const key in json) {
     if (json[key] !== null && typeof json[key] === 'object') {
-      rmhip(json[key] as Json);
+      _rmhip(json[key] as Json);
     }
   }
   return json;
 };
 
 /**
- * Copies a json object and removes the hashes.
+ * Returns a copied JSON object without hashes.
  * @param json - The JSON object to remove hashes from.
  */
-export const rmhsh = (json: Json) => {
+export const rmhsh = <T extends Json>(json: T) => {
   json = copy(json);
-  return rmhip(json);
+  return _rmhip(json);
 };
