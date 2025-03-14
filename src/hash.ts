@@ -5,7 +5,6 @@
 // found in the LICENSE file in the root of this package.
 import { Sha256 } from '@aws-crypto/sha256-js';
 import { copy, isBasicType, Json, JsonArray, JsonValue } from '@rljson/json';
-import { Hashed } from '@rljson/json/dist/json.js';
 
 import { fromUint8Array } from 'js-base64';
 
@@ -444,6 +443,12 @@ export class Hash {
     return result.join('');
   }
 }
+
+// .............................................................................
+/** Turns Json types into Hashed Json types */
+export type Hashed<T extends Json> = {
+  [K in keyof T]: T[K] extends Json ? Hashed<T[K]> : T[K];
+} & { _hash: string };
 
 // .............................................................................
 
