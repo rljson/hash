@@ -1,15 +1,15 @@
 <!--
-// @license
-// Copyright (c) 2025 Rljson
-//
-// Use of this source code is governed by terms that can be
-// found in the LICENSE file in the root of this package.
+@license
+Copyright (c) 2025 Rljson
+
+Use of this source code is governed by terms that can be
+found in the LICENSE file in the root of this package.
 -->
 
 # Contributors Guide
 
 - [Install](#install)
-  - [Check out](#check-out)
+  - [Checkout](#checkout)
   - [Install pnpm](#install-pnpm)
   - [Install dependencies](#install-dependencies)
   - [Install Vscode extensions](#install-vscode-extensions)
@@ -17,11 +17,14 @@
   - [Install GitHub CLI](#install-github-cli)
 - [Develop](#develop)
   - [Read architecture doc](#read-architecture-doc)
-  - [Checkout main](#checkout-main)
-  - [Create a branch](#create-a-branch)
   - [Debug](#debug)
   - [Update goldens](#update-goldens)
   - [Test and Build](#test-and-build)
+- [Workflow](#workflow)
+  - [Set a PR title](#set-a-pr-title)
+  - [Checkout main](#checkout-main)
+  - [Create a feature branch](#create-a-feature-branch)
+  - [Debug and develop](#debug-and-develop)
   - [Commit](#commit)
   - [Update dependencies](#update-dependencies)
   - [Increase version](#increase-version)
@@ -37,7 +40,7 @@
 
 ## Install
 
-### Check out
+### Checkout
 
 ```bash
 mkdir rljson
@@ -108,25 +111,6 @@ gh auth login
 Read [README.architecture.md](./README.architecture.md) to get an overview
 of the package's architecture.
 
-### Checkout main
-
-```bash
-git checkout main && \
-git fetch && \
-git pull
-```
-
-### Create a branch
-
-Please replace the value assigned to `MESSAGE` in the next command by your commit message.
-It will also used for branch name and pull request
-
-```bash
-export MESSAGE="Take over code from old rljson-js lib" && \
-export BRANCH=`echo "$MESSAGE" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9_]/_/g'` &&\
-git checkout -b $BRANCH
-```
-
 ### Debug
 
 In Vscode: At the `left side bar` click on the `Test tube` icon to open the `Test explorer`.
@@ -153,68 +137,102 @@ pnpm updateGoldens
 ### Test and Build
 
 ```bash
-pnpm test &&\
+pnpm test
 pnpm build
 ```
 
-### Commit
+<!-- ........................................................................-->
 
-Develop your feature
+## Workflow
 
-Commit your changes
+### Set a PR title
 
 ```bash
-git commit -am"$MESSAGE"
+export PR_TITLE="PR Title"
+```
+
+### Checkout main
+
+```bash
+git checkout main
+git fetch
+git pull
+```
+
+### Create a feature branch
+
+```bash
+export BRANCH=`echo "$PR_TITLE" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9_]/_/g'`
+git checkout -b $BRANCH
+```
+
+### Debug and develop
+
+Debug and develop
+
+### Commit
+
+If you only have one thing changed, execute
+
+```bash
+git add . && git commit -m "$PR_TITLE"
 ```
 
 ### Update dependencies
 
-We aim to work with the latest versions of our dependencies.
-
 ```bash
-pnpm update --latest &&\
+pnpm update --latest
 git commit -am"Update dependencies"
 ```
 
 ### Increase version
 
 ```bash
-pnpm version patch --no-git-tag-version && \
+pnpm version patch --no-git-tag-version
 git commit -am"Increase version"
 ```
 
 ### Create a pull request
 
 ```bash
-git push -u origin $BRANCH && \
-gh pr create --base main --title "$MESSAGE" --body "" && \
+git push -u origin $BRANCH
+gh pr create --base main --title "$PR_TITLE" --body ""
 gh pr merge --auto --squash
 ```
 
 ### Wait until PR is merged
 
-Get the PR URL with the following command
-
 ```bash
-gh pr view --json url -q .url
-```
+echo -e "\033[34m$(gh pr view --json url | jq -r '.url')\033[0m"
+echo -e "\033[33mWait until PR is closed or merged ...\033[0m"
 
-Visit it
+while true; do
+  STATUS=$(gh pr view --json state | jq -r '.state')
+  if [ "$STATUS" = "CLOSED" ] || [ "$STATUS" = "MERGED" ]; then
+    echo -e "\033[32mPR has been merged or closed.\033[0m"
+    break
+  elif [ "$STATUS" = "FAILED" ]; then
+    echo -e "\033[31mError: PR has failed.\033[0m"
+    exit 1
+  fi
+  sleep 2
+done
+```
 
 ### Delete feature branch
 
 ```bash
-git fetch && git checkout main && \
-git reset --soft origin/main && \
-git stash -m"PR Aftermath" && \
-git pull && \
+git fetch && git checkout main
+git reset --soft origin/main
+git stash -m"PR Aftermath"
+git pull
 git branch -d $BRANCH
 ```
 
 ### Publish to NPM
 
 ```bash
-npm publish --access public && \
+npm publish --access public
 git tag $(npm pkg get version | tr -d '\\"')
 ```
 
