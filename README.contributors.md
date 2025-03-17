@@ -20,14 +20,16 @@ found in the LICENSE file in the root of this package.
   - [Debug](#debug)
   - [Update goldens](#update-goldens)
   - [Test and Build](#test-and-build)
+  - [Rename classes](#rename-classes)
 - [Workflow](#workflow)
   - [Set a PR title](#set-a-pr-title)
   - [Checkout main](#checkout-main)
   - [Create a feature branch](#create-a-feature-branch)
+  - [Update dependencies](#update-dependencies)
   - [Debug and develop](#debug-and-develop)
   - [Commit](#commit)
-  - [Update dependencies](#update-dependencies)
   - [Increase version](#increase-version)
+  - [Build](#build)
   - [Create a pull request](#create-a-pull-request)
   - [Wait until PR is merged](#wait-until-pr-is-merged)
   - [Delete feature branch](#delete-feature-branch)
@@ -141,6 +143,54 @@ pnpm test
 pnpm build
 ```
 
+### Rename classes
+
+Replace `ClassA` by `ClassB` in the following script and run it:
+
+```bash
+export CLASS_A="ColumnSelection"
+export CLASS_B="ColumnsConfig"
+
+to_snake_case() {
+    echo "$1" | sed -E 's/([a-z0-9])([A-Z])/\1-\2/g' | tr '[:upper:]' '[:lower:]'
+}
+
+to_lower_first() {
+    first_char=$(echo "$1" | cut -c1 | tr '[:upper:]' '[:lower:]')
+    rest_chars=$(echo "$1" | cut -c2-)
+    echo "$first_char$rest_chars"
+}
+
+export LOWER_CLASS_A=$(to_lower_first "$CLASS_A")
+export LOWER_CLASS_B=$(to_lower_first "$CLASS_B")
+export SNAKE_CLASS_A=$(to_snake_case "$CLASS_A")
+export SNAKE_CLASS_B=$(to_snake_case "$CLASS_B")
+
+find . -type f \( -name "*.ts" -o -name "*.md" -o -name "package.json" \) -not -path "./node_modules/*" \
+    -exec sed -i '' "s/$CLASS_A/$CLASS_B/g" {} +
+
+find . -type f \( -name "*.ts" -o -name "*.md" -o -name "package.json" \) -not -path "./node_modules/*" \
+    -exec sed -i '' "s/$LOWER_CLASS_A/$LOWER_CLASS_B/g" {} +
+
+find . -type f \( -name "*.ts" -o -name "*.md" -o -name "package.json" \) -not -path "./node_modules/*" \
+    -exec sed -i '' "s/$SNAKE_CLASS_A/$SNAKE_CLASS_B/g" {} +
+
+find . -type f -not -path "*/node_modules/*" -not -path "*/.*" -name "*$SNAKE_CLASS_A*" \
+    -exec bash -c 'mv "$1" "${1//'"$SNAKE_CLASS_A"'/'"$SNAKE_CLASS_B"'}"' _ {} \;
+
+rm -rf test/goldens
+pnpm updateGoldens
+```
+
+Review the changes.
+
+Commit
+
+```bash
+git stage .
+git commit -am"Rename $CLASS_A to $CLASS_B"
+```
+
 <!-- ........................................................................-->
 
 ## Workflow
@@ -166,6 +216,13 @@ export BRANCH=`echo "$PR_TITLE" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9_]
 git checkout -b $BRANCH
 ```
 
+### Update dependencies
+
+```bash
+pnpm update --latest
+git commit -am"Update dependencies"
+```
+
 ### Debug and develop
 
 Debug and develop
@@ -178,18 +235,17 @@ If you only have one thing changed, execute
 git add . && git commit -m "$PR_TITLE"
 ```
 
-### Update dependencies
-
-```bash
-pnpm update --latest
-git commit -am"Update dependencies"
-```
-
 ### Increase version
 
 ```bash
 pnpm version patch --no-git-tag-version
 git commit -am"Increase version"
+```
+
+### Build
+
+```bash
+npm run build
 ```
 
 ### Create a pull request
@@ -213,7 +269,7 @@ while true; do
     break
   elif [ "$STATUS" = "FAILED" ]; then
     echo -e "\033[31mError: PR has failed.\033[0m"
-    exit 1
+    break
   fi
   sleep 2
 done
