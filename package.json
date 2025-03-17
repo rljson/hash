@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "@aws-crypto/sha256-js": "^5.2.0",
-    "@rljson/json": "^0.0.10",
+    "@rljson/json": "^0.0.14",
     "js-base64": "^3.7.7"
   },
   "pnpm": {
