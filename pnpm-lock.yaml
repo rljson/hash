@@ -12,8 +12,8 @@ importers:
         specifier: ^5.2.0
         version: 5.2.0
       '@rljson/json':
-        specifier: ^0.0.10
-        version: 0.0.10
+        specifier: ^0.0.15
+        version: 0.0.15
       js-base64:
         specifier: ^3.7.7
         version: 3.7.7
@@ -386,8 +386,8 @@ packages:
     resolution: {integrity: sha512-cq8o4cWH0ibXh9VGi5P20Tu9XF/0fFXl9EUinr9QfTM7a7p0oTA4iJRCQWppXR1Pg8dSM0UCItCkPwsk9qWWYA==}
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
 
-  '@rljson/json@0.0.10':
-    resolution: {integrity: sha512-hGlfW9cny0ekCBeKfoIGcAZctJRtPaf4Ke4nrj+Ilwxi5fB8kSKPoXBPYwwNggCoIFDVh2/LeOW1/N6GnHaMTA==}
+  '@rljson/json@0.0.15':
+    resolution: {integrity: sha512-FqtRd5VGwEAmxIJ7OcxJ+l9UCe6hgHaXm9/OWjaAFoFSuclXwZ9wcO1turmTbRgy6Se2BmB8lmchAxn6TOLtVg==}
     engines: {node: '>=22.14.0'}
 
   '@rollup/pluginutils@5.1.4':
@@ -1195,8 +1195,8 @@ packages:
   muggle-string@0.4.1:
     resolution: {integrity: sha512-VNTrAak/KhO2i8dqqnqnAHOa3cYBwXEZe9h+D5h/1ZqFSTEFHdM65lR7RoIqq3tBBYavsOXV84NoHXZ0AkPyqQ==}
 
-  nanoid@3.3.9:
-    resolution: {integrity: sha512-SppoicMGpZvbF1l3z4x7No3OlIjP7QJvC9XR7AhZr1kL133KHnKPztkKDc+Ir4aJ/1VhTySrtKhrsycmrMQfvg==}
+  nanoid@3.3.10:
+    resolution: {integrity: sha512-vSJJTG+t/dIKAUhUDw/dLdZ9s//5OxcHqLaDWWrW4Cdq7o6tdLIczUkMXt2MBNmk6sJRZBZRXVixs7URY1CmIg==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
@@ -1906,7 +1906,7 @@ snapshots:
 
   '@pkgr/core@0.1.1': {}
 
-  '@rljson/json@0.0.10': {}
+  '@rljson/json@0.0.15': {}
 
   '@rollup/pluginutils@5.1.4(rollup@4.35.0)':
     dependencies:
@@ -2753,7 +2753,7 @@ snapshots:
 
   muggle-string@0.4.1: {}
 
-  nanoid@3.3.9: {}
+  nanoid@3.3.10: {}
 
   natural-compare@1.4.0: {}
 
@@ -2834,7 +2834,7 @@ snapshots:
 
   postcss@8.5.3:
     dependencies:
-      nanoid: 3.3.9
+      nanoid: 3.3.10
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
