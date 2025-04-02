@@ -11,6 +11,7 @@ import { fromUint8Array } from 'js-base64';
 import { ApplyConfig, defaultApplyConfig } from './apply-config.ts';
 import { HashConfig } from './hash-config.ts';
 
+
 // .............................................................................
 /**
  * Adds hashes to JSON object.
@@ -41,7 +42,7 @@ export class Hash {
    * @param applyConfig - Options for the operation.
    * @returns The JSON object with hashes added.
    */
-  apply<T extends Json>(json: T, applyConfig?: ApplyConfig): Hashed<T> {
+  apply<T extends Json>(json: T, applyConfig?: ApplyConfig): T {
     applyConfig = applyConfig ?? defaultApplyConfig();
     json = applyConfig.inPlace ? json : copy(json);
     this._addHashesToObject(json, applyConfig);
@@ -49,21 +50,21 @@ export class Hash {
     if (applyConfig.throwOnWrongHashes) {
       this.validate(json as Json);
     }
-    return json as Hashed<T>;
+    return json;
   }
 
   // ...........................................................................
-  applyInPlace<T extends Json>(
-    json: T,
-    updateExistingHashes: boolean = false,
-    throwOnWrongHashes: boolean = true,
-  ): Hashed<T> {
-    const applyConfig: ApplyConfig = {
-      inPlace: true,
-      updateExistingHashes,
-      throwOnWrongHashes,
-    };
-
+  /**
+   * Writes hashes into the JSON object in place.
+   * @param json - The JSON object to hash.
+   * @param applyConfig - Options for the operation.
+   * @returns The JSON object with hashes added.
+   */
+  applyInPlace<T extends Json>(json: T, applyConfig?: ApplyConfig): T {
+    applyConfig = applyConfig ?? {};
+    applyConfig.updateExistingHashes ??= false;
+    applyConfig.throwOnWrongHashes ??= true;
+    applyConfig.inPlace = true;
     return this.apply(json, applyConfig);
   }
 
@@ -93,7 +94,7 @@ export class Hash {
     } else if (Array.isArray(value)) {
       return this._calcArrayHash(value);
     } else {
-      return this.apply(value as Json)._hash;
+      return (this.apply(value as Json) as Hashed<Json>)._hash;
     }
   }
 

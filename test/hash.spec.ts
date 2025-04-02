@@ -11,6 +11,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { defaultApplyConfig } from '../src/apply-config';
 import { Hash, hip, hsh, rmhsh } from '../src/hash';
 
+
 describe('Hash', () => {
   let jh = Hash.default;
 
@@ -780,7 +781,7 @@ describe('Hash', () => {
 
     describe('with updateExistingHashes set to true and throwOnWrongHashes set to false', () => {
       const updateExistingHashes = true;
-      const throwOnWrongHashes = true;
+      const throwOnWrongHashes = false;
 
       it('overwrites existing hashes', () => {
         const json = {
@@ -788,7 +789,7 @@ describe('Hash', () => {
           _hash: 'wrongHash',
         };
 
-        jh.applyInPlace(json, updateExistingHashes, !throwOnWrongHashes);
+        jh.applyInPlace(json, { updateExistingHashes, throwOnWrongHashes });
         expect(json._hash).toEqual('5Dq88zdSRIOcAS-WM_lYYt');
       });
     });
