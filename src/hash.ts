@@ -11,7 +11,6 @@ import { fromUint8Array } from 'js-base64';
 import { ApplyConfig, defaultApplyConfig } from './apply-config.ts';
 import { HashConfig } from './hash-config.ts';
 
-
 // .............................................................................
 /**
  * Adds hashes to JSON object.
@@ -223,7 +222,7 @@ export class Hash {
    * @param applyConfig - Whether to process recursively.
    */
   private _addHashesToObject(
-    obj: Record<string, JsonValue>,
+    obj: Record<string, JsonValue | null>,
     applyConfig: ApplyConfig,
   ): void {
     const updateExisting = applyConfig.updateExistingHashes;
