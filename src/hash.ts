@@ -222,7 +222,7 @@ export class Hash {
    * @param applyConfig - Whether to process recursively.
    */
   private _addHashesToObject(
-    obj: Record<string, JsonValue | null>,
+    obj: Record<string, JsonValue | null | undefined>,
     applyConfig: ApplyConfig,
   ): void {
     const updateExisting = applyConfig.updateExistingHashes;
