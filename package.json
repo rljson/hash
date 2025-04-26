@@ -1,6 +1,6 @@
 {
   "name": "@rljson/hash",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "Deeply apply hashes to JSON data",
   "homepage": "https://github.com/rljson/hash",
   "bugs": "https://github.com/rljson/hash/issues",
