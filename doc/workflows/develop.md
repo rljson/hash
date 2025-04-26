@@ -33,13 +33,13 @@ git pull
 
 ## Set pull request title
 
-Replace `Refactor return types of applyInPlace, apply, hip and hsh` here and below
+Replace `Update to latest @rjson/json ` here and below
 by your new pull request title.
 
 ## Create a feature branch
 
 ```bash
-node scripts/create-branch.js "Refactor return types of applyInPlace, apply, hip and hsh"
+node scripts/create-branch.js "Update to latest @rjson/json"
 ```
 
 ## Update dependencies
@@ -65,7 +65,7 @@ In Vscode, press
 
 ```bash
 git add .
-git commit -am"Refactor return types of applyInPlace, apply, hip and hsh"
+git commit -am"Update to latest @rjson/json"
 ```
 
 ## Increase version
@@ -96,7 +96,7 @@ node scripts/push-branch.js
 ## Create a pull request
 
 ```bash
-gh pr create --base main --title "Refactor return types of applyInPlace, apply, hip and hsh" --body " "
+gh pr create --base main --title "Update to latest @rjson/json" --body " "
 ```
 
 ## Code review
