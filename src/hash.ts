@@ -257,7 +257,7 @@ export class Hash {
     for (const [key, value] of Object.entries(obj)) {
       if (key === '_hash') continue;
       if (value === null) {
-        objToHash[key] = null;
+        // Treat null as not existing
       } else if (typeof value === 'object' && !Array.isArray(value)) {
         objToHash[key] = value['_hash'];
       } else if (Array.isArray(value)) {
