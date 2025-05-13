@@ -33,13 +33,13 @@ git pull
 
 ## Set pull request title
 
-Replace `Update to latest @rjson/json ` here and below
+Replace `Treat null values as undefined when hashing ` here and below
 by your new pull request title.
 
 ## Create a feature branch
 
 ```bash
-node scripts/create-branch.js "Update to latest @rjson/json"
+node scripts/create-branch.js "Treat null values as undefined when hashing"
 ```
 
 ## Update dependencies
@@ -65,7 +65,7 @@ In Vscode, press
 
 ```bash
 git add .
-git commit -am"Update to latest @rjson/json"
+git commit -am"Treat null values as undefined when hashing"
 ```
 
 ## Increase version
@@ -96,7 +96,7 @@ node scripts/push-branch.js
 ## Create a pull request
 
 ```bash
-gh pr create --base main --title "Update to latest @rjson/json" --body " "
+gh pr create --base main --title "Treat null values as undefined when hashing" --body " "
 ```
 
 ## Code review
