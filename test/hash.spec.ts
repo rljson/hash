@@ -11,7 +11,6 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { defaultApplyConfig } from '../src/apply-config';
 import { Hash, hip, hsh, rmhsh } from '../src/hash';
 
-
 describe('Hash', () => {
   let jh = Hash.default;
 
@@ -58,9 +57,9 @@ describe('Hash', () => {
           it('with a null value', () => {
             const json = jh.apply({ key: null, _hash: '' });
             expect(json.key).toEqual(null);
-            const expectedHash = jh.calcHash('{"key":null}');
+            const expectedHash = jh.calcHash('{}');
             expect(json._hash).toEqual(expectedHash);
-            expect(json._hash).toEqual('BZwS6bAVtKxSW0AW5y8ANk');
+            expect(json._hash).toEqual('RBNvo1WzZ4oRRq0W9-hknp');
           });
 
           it('with an array with null values', () => {
@@ -70,6 +69,13 @@ describe('Hash', () => {
             expect(json._hash).toEqual(expectedHash);
             expect(json._hash).toEqual('TJBZ_lVlkDw6WlF8esM0I5');
           });
+        });
+
+        it('should treat null values as not undefined', () => {
+          // Null
+          const a0 = hip({ a: 1, b: null, c: 3 })._hash;
+          const a1 = hip({ a: 1, c: 3 })._hash;
+          expect(a0).toEqual(a1);
         });
 
         it('existing _hash should be overwritten', () => {
