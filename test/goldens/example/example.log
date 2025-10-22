@@ -10,8 +10,6 @@ Add hashes to the json structure.
   },
   "_hash": "k-3v5I-Q6Q9vPdVJxsMYUk"
 }
-Set a maximum floating point precision.
-Number 1.0000000001 has a higher precision than 0.001.
 Use hash to modify the input object directly.
 Set "upateExistingHashes: false" to create missing hashes but without touching existing ones.
 If existing hashes do not match new ones, an error is thrown.

@@ -1,6 +1,6 @@
 {
   "name": "@rljson/hash",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "Deeply apply hashes to JSON data",
   "homepage": "https://github.com/rljson/hash",
   "bugs": "https://github.com/rljson/hash/issues",
@@ -28,6 +28,7 @@
     "updateGoldens": "cross-env UPDATE_GOLDENS=true npm test"
   },
   "devDependencies": {
+    "@tssuite/golden": "^0.0.3",
     "@types/node": "^22.15.17",
     "@typescript-eslint/eslint-plugin": "^8.32.1",
     "@typescript-eslint/parser": "^8.32.1",
@@ -57,5 +58,5 @@
       "esbuild"
     ]
   },
-  "packageManager": "pnpm@10.11.0"
+  "packageManager": "pnpm@10.19.0"
 }
