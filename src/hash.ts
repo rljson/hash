@@ -9,6 +9,7 @@ import { copy, isBasicType, Json, JsonArray, JsonValue } from '@rljson/json';
 import { fromUint8Array } from 'js-base64';
 
 import { ApplyConfig, defaultApplyConfig } from './apply-config.ts';
+import { floatRep } from './float-rep.ts';
 import { HashConfig } from './hash-config.ts';
 
 // .............................................................................
@@ -122,12 +123,6 @@ export class Hash {
    * @returns The JSON string representation of the map.
    */
   static jsonString = Hash._jsonString;
-
-  /**
-   * Checks an basic type. Throws an error if the type is not supported.
-   * @param value - The value to check.
-   */
-  checkBasicType = (value: any) => this._checkBasicType(value);
 
   // ######################
   // Private
@@ -287,18 +282,29 @@ export class Hash {
     obj['_hash'] = hash;
   }
 
+  // ...........................................................................
+  /// Converts a basic type to a suitable representation.
   private _checkBasicType(value: any): any {
     if (typeof value === 'string') {
       return value;
     }
+
     if (typeof value === 'number') {
-      this._checkNumber(value);
-      return value;
+      if (Number.isNaN(value)) {
+        throw new Error('NaN is not supported.');
+      }
+
+      // Round the value if configured to do so
+      else {
+        return value;
+      }
     } else if (typeof value === 'boolean') {
       return value;
+      /* v8 ignore start */
     } else {
-      throw new Error(`Unsupported type: ${typeof value}`);
+      throw new Error(`Unsupported type: ${value.runtimeType}`);
     }
+    /* v8 ignore end */
   }
 
   // ...........................................................................
@@ -345,67 +351,6 @@ export class Hash {
 
   // ...........................................................................
   /**
-   * Turns a number into a string with a given precision.
-   * @param value - The number to check.
-   */
-  private _checkNumber(value: number): void {
-    if (isNaN(value)) {
-      throw new Error('NaN is not supported.');
-    }
-
-    if (Number.isInteger(value)) {
-      return;
-    }
-
-    if (this._exceedsPrecision(value)) {
-      throw new Error(`Number ${value} has a higher precision than 0.001.`);
-    }
-
-    if (this._exceedsUpperRange(value)) {
-      throw new Error(`Number ${value} exceeds NumberHashingConfig.maxNum.`);
-    }
-
-    if (this._exceedsLowerRange(value)) {
-      throw new Error(
-        `Number ${value} is smaller than NumberHashingConfig.minNum.`,
-      );
-    }
-  }
-
-  // ...........................................................................
-  /**
-   * Checks if a number exceeds the defined range.
-   * @param value - The number to check.
-   * @returns True if the number exceeds the given range, false otherwise.
-   */
-  private _exceedsUpperRange(value: number): boolean {
-    return value > this.config.numberConfig.maxNum;
-  }
-
-  // ...........................................................................
-  /**
-   * Checks if a number exceeds the defined range.
-   * @param value - The number to check.
-   * @returns True if the number exceeds the given range, false otherwise.
-   */
-  private _exceedsLowerRange(value: number): boolean {
-    return value < this.config.numberConfig.minNum;
-  }
-
-  // ...........................................................................
-  /**
-   * Checks if a number exceeds the precision.
-   * @param value - The number to check.
-   * @returns True if the number exceeds the precision, false otherwise.
-   */
-  private _exceedsPrecision(value: number): boolean {
-    const precision = this.config.numberConfig.precision;
-    const roundedValue = Math.round(value / precision) * precision;
-    return Math.abs(value - roundedValue) > Number.EPSILON;
-  }
-
-  // ...........................................................................
-  /**
    * Converts a map to a JSON string.
    * @param map - The map to convert.
    * @returns The JSON string representation of the map.
@@ -419,8 +364,10 @@ export class Hash {
         return 'null';
       } else if (typeof value === 'string') {
         return `"${value.replace(/"/g, '\\"')}"`; // Escape quotes
-      } else if (typeof value === 'number' || typeof value === 'boolean') {
-        return value.toString();
+      } else if (typeof value === 'number') {
+        return floatRep(value);
+      } else if (typeof value === 'boolean') {
+        return value ? 'true' : 'false';
       } else if (Array.isArray(value)) {
         return `[${value.map(encodeValue).join(',')}]`;
       } else if (value.constructor === Object) {

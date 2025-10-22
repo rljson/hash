@@ -2,7 +2,6 @@ import { Json } from '@rljson/json';
 
 import { Hash, hip, hsh } from './index.ts';
 
-
 /**
  * The example function demonstrates how to use rljson/hash
  */
@@ -40,18 +39,6 @@ export const example = () => {
   //   },
   //   "_hash": "k-3v5I-Q6Q9vPdVJxsMYUk"
   // }
-
-  // .............................................................................
-  print('Set a maximum floating point precision.');
-
-  try {
-    hsh({
-      a: 1.0000000001,
-      _hash: '',
-    });
-  } catch (e: unknown) {
-    print((e as Error).message); // Number 1.0000000001 has a higher precision than 0.001
-  }
 
   // .............................................................................
   print('Use hash to modify the input object directly.');
