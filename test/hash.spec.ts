@@ -8,6 +8,7 @@ import { Json } from '@rljson/json';
 
 import { beforeEach, describe, expect, it } from 'vitest';
 
+import { floatRep, maxFloat, minFloat } from '../src';
 import { defaultApplyConfig } from '../src/apply-config';
 import { Hash, hip, hsh, rmhsh } from '../src/hash';
 
@@ -46,6 +47,15 @@ describe('Hash', () => {
             expect(json._hash).toEqual('t4HVsGBJblqznOBwy6IeLt');
           });
 
+          it('with a double value with commas', () => {
+            const json = jh.apply({ key: 1.1, _hash: '' });
+            expect(json.key).toEqual(1.1);
+            const fr = floatRep(1.1);
+            const expectedHash = jh.calcHash(`{"key":${fr}}`);
+            expect(json._hash).toEqual(expectedHash);
+            expect(json._hash).toEqual('os2u9CZsQJU7ms_pSpcNyq');
+          });
+
           it('with a bool value', () => {
             const json = jh.apply({ key: true, _hash: '' });
             expect(json.key).toEqual(true);
@@ -73,8 +83,8 @@ describe('Hash', () => {
 
         it('should treat null values as not undefined', () => {
           // Null
-          const a0 = hip({ a: 1, b: null, c: 3 })._hash;
-          const a1 = hip({ a: 1, c: 3 })._hash;
+          const a0 = (hip({ a: 1, b: null, c: 3 }) as any)._hash;
+          const a1 = (hip({ a: 1, c: 3 }) as any)._hash;
           expect(a0).toEqual(a1);
         });
 
@@ -325,7 +335,7 @@ describe('Hash', () => {
 
     describe('replaces/updates existing hashes', () => {
       describe('when ApplyConfig.updateExistingHashes is set to true', () => {
-        const allHashesChanged = (json: Json) => {
+        const allHashesChanged = (json: any) => {
           return (
             json['a']!['_hash'] !== 'hash_a' &&
             json['a']!['b']['_hash'] !== 'hash_b' &&
@@ -503,180 +513,63 @@ describe('Hash', () => {
           });
         });
 
-        describe('i.e. it does throw when numbers do not match maximum precision', () => {
-          describe('e.g. numbers have more commas then precision allows', () => {
-            it('e.g. 1.0001', () => {
-              expect(jh.config.numberConfig.precision).toBe(0.001);
-
-              // Test a json that has a number outside the precision -> throw
+        describe('i.e. ensures numbers are in the given range', () => {
+          describe('i.e. values exceed NumbersConfig.maxNum', () => {
+            function check(val: number, throws: boolean) {
               let message = '';
+              val = parseFloat(val.toFixed(3));
+
               try {
-                jh.apply({
-                  key: 1.0001,
-                  _hash: '',
-                });
+                jh.apply({ key: val, _hash: '' });
               } catch (e: any) {
                 message = e.toString();
               }
 
-              expect(message).toEqual(
-                'Error: Number 1.0001 has a higher precision than 0.001.',
-              );
-            });
-
-            it('e.g. 1.1234', () => {
-              expect(jh.config.numberConfig.precision).toBe(0.001);
-
-              // Test a json that has a number outside the precision -> throw
-              let message = '';
-              try {
-                jh.apply({
-                  key: 1.1234,
-                  _hash: '',
-                });
-              } catch (e: any) {
-                message = e.toString();
+              if (throws) {
+                expect(message).toEqual(
+                  `Error: Float value ${val} must be between ${minFloat} and ${maxFloat}.`,
+                );
+              } else {
+                expect(message).toEqual('');
               }
-
-              expect(message).toEqual(
-                'Error: Number 1.1234 has a higher precision than 0.001.',
-              );
-            });
-
-            it('e.g. -1.0001', () => {
-              expect(jh.config.numberConfig.precision).toBe(0.001);
-
-              // Test a json that has a number outside the precision -> throw
-              let message = '';
-              try {
-                jh.apply({
-                  key: -1.0001,
-                  _hash: '',
-                });
-              } catch (e: any) {
-                message = e.toString();
-              }
-
-              expect(message).toEqual(
-                'Error: Number -1.0001 has a higher precision than 0.001.',
-              );
-            });
-
-            it('e.g. -1.1234', () => {
-              expect(jh.config.numberConfig.precision).toBe(0.001);
-
-              // Test a json that has a number outside the precision -> throw
-              let message = '';
-              try {
-                jh.apply({
-                  key: -1.1234,
-                  _hash: '',
-                });
-              } catch (e: any) {
-                message = e.toString();
-              }
-
-              expect(message).toEqual(
-                'Error: Number -1.1234 has a higher precision than 0.001.',
-              );
-            });
-
-            it('e.g. 9839089403.1235', () => {
-              expect(jh.config.numberConfig.precision).toBe(0.001);
-
-              // Test a json that has a number outside the precision -> throw
-              let message = '';
-              try {
-                jh.apply({
-                  key: 9839089403.1235,
-                  _hash: '',
-                });
-              } catch (e: any) {
-                message = e.toString();
-              }
-
-              expect(message).toEqual(
-                'Error: Number 9839089403.1235 has a higher precision than 0.001.',
-              );
-            });
-
-            it('e.g. 9839089403.1235', () => {
-              expect(jh.config.numberConfig.precision).toBe(0.001);
-
-              // Test a json that has a number outside the precision -> throw
-              let message = '';
-              try {
-                jh.apply({
-                  key: 0.1e-4,
-                  _hash: '',
-                });
-              } catch (e: any) {
-                message = e.toString();
-              }
-
-              expect(message).toEqual(
-                'Error: Number 0.00001 has a higher precision than 0.001.',
-              );
-            });
-          });
-        });
-      });
-
-      describe('i.e. ensures numbers are in the given range', () => {
-        describe('i.e. values exceed NumbersConfig.maxNum', () => {
-          let max = 0;
-
-          beforeEach(() => {
-            max = jh.config.numberConfig.maxNum;
-          });
-
-          function check(val: number) {
-            let message = '';
-            val = parseFloat(val.toFixed(3));
-
-            try {
-              jh.apply({ key: val, _hash: '' });
-            } catch (e: any) {
-              message = e.toString();
             }
 
-            expect(message).toEqual(
-              `Error: Number ${val} exceeds NumberHashingConfig.maxNum.`,
-            );
-          }
+            it('.e.g. shortly above the maximum', () => {
+              check(maxFloat + 0.01, true);
+            });
 
-          it('.e.g. shortly above the maximum', () => {
-            check(max + 0.001);
-          });
-        });
-
-        describe('i.e. values exceed NumbersConfig.maxNum', () => {
-          let min = 0;
-
-          beforeEach(() => {
-            min = jh.config.numberConfig.minNum;
+            it('but not when shortly below the maximum', () => {
+              check(maxFloat - 0.01, false);
+            });
           });
 
-          /**
-           * val: number
-           */
-          function check(val: number) {
-            let message = '';
-            val = parseFloat(val.toFixed(3));
+          describe('i.e. values exceed NumbersConfig.maxNum', () => {
+            function check(val: number, throws: boolean) {
+              let message = '';
+              val = parseFloat(val.toFixed(3));
 
-            try {
-              jh.apply({ key: val, _hash: '' });
-            } catch (e: any) {
-              message = e.toString();
+              try {
+                jh.apply({ key: val, _hash: '' });
+              } catch (e: any) {
+                message = e.toString();
+              }
+
+              if (throws) {
+                expect(message).toEqual(
+                  `Error: Float value ${val} must be between ${minFloat} and ${maxFloat}.`,
+                );
+              } else {
+                expect(message).toEqual('');
+              }
             }
 
-            expect(message).toEqual(
-              `Error: Number ${val} is smaller than NumberHashingConfig.minNum.`,
-            );
-          }
+            it('.e.g. shortly below the minimum', () => {
+              check(minFloat - 0.01, true);
+            });
 
-          it('.e.g. shortly above the maximum', () => {
-            check(min - 0.001);
+            it('.e.g. shortly above the maximum', () => {
+              check(minFloat + 0.01, false);
+            });
           });
         });
       });
@@ -866,31 +759,6 @@ describe('Hash', () => {
     });
   });
 
-  describe('_checkBasicType(string)', () => {
-    it('with a string', () => {
-      expect(jh.checkBasicType('hello')).toEqual('hello');
-    });
-
-    it('with an int', () => {
-      expect(jh.checkBasicType(10)).toEqual(10);
-    });
-
-    it('with a double', () => {
-      expect(jh.checkBasicType(true)).toEqual(true);
-    });
-
-    it('with an non basic type', () => {
-      let message = '';
-      try {
-        jh.checkBasicType(new Set());
-      } catch (e: any) {
-        message = e.toString();
-      }
-
-      expect(message).toEqual('Error: Unsupported type: object');
-    });
-  });
-
   describe('validate', () => {
     describe('with an empty json', () => {
       describe('throws', () => {
@@ -1019,8 +887,7 @@ describe('Hash', () => {
     });
 
     describe('with a deeply nested json', () => {
-      /** @type {Json} */
-      let json2;
+      let json2: Record<string, any>;
 
       beforeEach(() => {
         json2 = {
@@ -1133,8 +1000,7 @@ describe('Hash', () => {
     });
 
     describe('with a deeply nested json with child array', () => {
-      /** @type {Json} */
-      let json2;
+      let json2: Record<string, any>;
 
       beforeEach(() => {
         json2 = {
@@ -1169,7 +1035,7 @@ describe('Hash', () => {
 
             try {
               jh.validate(json2);
-            } catch (/** @type any */ e) {
+            } catch (e: any) {
               message = e.toString();
             }
 
@@ -1186,7 +1052,7 @@ describe('Hash', () => {
 
             try {
               jh.validate(json2);
-            } catch (/** @type any */ e) {
+            } catch (e: any) {
               message = e.toString();
             }
 
@@ -1201,7 +1067,7 @@ describe('Hash', () => {
 
             try {
               jh.validate(json2);
-            } catch (/** @type any */ e) {
+            } catch (e: any) {
               message = e.toString();
             }
 
@@ -1241,7 +1107,7 @@ describe('Hash', () => {
   describe('hip', () => {
     it('writes hashes in place and returns the json', () => {
       const x = { a: { b: 1 } };
-      const xHashed = hip(x);
+      const xHashed = hip(x) as Record<string, any>;
       expect(x).toBe(xHashed);
       expect(xHashed._hash).toBe('aGyCrR_fCrzMa6oP_6N50z');
       expect(xHashed.a._hash).toBe('647TzLUCMJO1b0kKRlAeiN');
@@ -1251,7 +1117,7 @@ describe('Hash', () => {
   describe('hsh', () => {
     it('remains the original object unchanged and returns a copy with hashes', () => {
       const x = { a: { b: 1 } };
-      const xHashed = hsh(x);
+      const xHashed = hsh(x) as Record<string, any>;
       expect(x).toEqual({ a: { b: 1 } });
       expect(xHashed._hash).toBe('aGyCrR_fCrzMa6oP_6N50z');
       expect(xHashed.a._hash).toBe('647TzLUCMJO1b0kKRlAeiN');

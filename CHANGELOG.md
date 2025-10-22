@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.0.17]
+
+- BREAKING CHANGES:
+  - Changed hash calculation for floating point numbers
+  - IMPORTANT: JSON WITH FLOATING POINT NUMBERS WILL CREATE DIFFERENT HASHES
+
 ## [0.0.13]
 
 - BREAKING CHANGES:

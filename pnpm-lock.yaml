@@ -18,6 +18,9 @@ importers:
         specifier: ^3.7.7
         version: 3.7.7
     devDependencies:
+      '@tssuite/golden':
+        specifier: ^0.0.3
+        version: 0.0.3(@rljson/json@0.0.21)
       '@types/node':
         specifier: ^22.15.17
         version: 22.15.17
@@ -536,6 +539,12 @@ packages:
   '@smithy/util-utf8@2.3.0':
     resolution: {integrity: sha512-R8Rdn8Hy72KKcebgLiv8jQcQkXoLMOGGv5uI1/k0l+snqkOzQ1R0ChUBCxWMlBsFMekWjq0wRudIweFs7sKT5A==}
     engines: {node: '>=14.0.0'}
+
+  '@tssuite/golden@0.0.3':
+    resolution: {integrity: sha512-1xfNwICkumYGJu5zD4a+1bJdSJmcUCRD3cN5MwMJ2/TAEXaQ5wfRDxSBIFx4yN4j+6ySpHUgWAJOp3tvHtkzAQ==}
+    engines: {node: '>=22.14.0'}
+    peerDependencies:
+      '@rljson/json': ^0.0.21
 
   '@types/argparse@1.0.38':
     resolution: {integrity: sha512-ebDJ9b0e702Yr7pWgB0jzm+CX4Srzz8RcXtLJDJB+BSccqMa36uyH/zUsSYao5+BD1ytv3k3rPYCq4mAE1hsXA==}
@@ -2334,6 +2343,10 @@ snapshots:
     dependencies:
       '@smithy/util-buffer-from': 2.2.0
       tslib: 2.8.1
+
+  '@tssuite/golden@0.0.3(@rljson/json@0.0.21)':
+    dependencies:
+      '@rljson/json': 0.0.21
 
   '@types/argparse@1.0.38': {}
 

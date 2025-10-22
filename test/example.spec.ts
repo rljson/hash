@@ -4,12 +4,11 @@
 // Use of this source code is governed by terms that can be
 // found in the LICENSE file in the root of this package.
 
-import { readFile, writeFile } from 'fs/promises';
-import { describe, expect, it } from 'vitest';
+import { writeGolden } from '@tssuite/golden';
+
+import { describe, it } from 'vitest';
 
 import { example } from '../src/example';
-
-import { updateGoldens } from './setup/goldens';
 
 describe('example', () => {
   it('should run without error', async () => {
@@ -20,14 +19,7 @@ describe('example', () => {
     example();
 
     // Write golden file
-    const logFilePath = 'test/goldens/example.log';
-    if (updateGoldens()) {
-      await writeFile(logFilePath, logMessages.join('\n'));
-    }
-
-    // Compare log messages with golden file
-    const golden = await readFile(logFilePath, 'utf8');
-    expect(golden).toBe(logMessages.join('\n'));
+    writeGolden('example.log', logMessages.join('\n'));
 
     // Restore console.log
     console.log = log;
