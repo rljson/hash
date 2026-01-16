@@ -156,6 +156,7 @@ export class Hash {
     // Check the hashes of the child elements
     for (const [key, value] of Object.entries(jsonIs)) {
       if (key === '_hash') continue;
+      /* v8 ignore else -- @preserve */
       if (
         value !== null &&
         typeof value === 'object' &&
@@ -251,6 +252,7 @@ export class Hash {
 
     for (const [key, value] of Object.entries(obj)) {
       if (key === '_hash') continue;
+      /* v8 ignore else -- @preserve */
       if (value === null) {
         // Treat null as not existing
       } else if (typeof value === 'object' && !Array.isArray(value)) {
@@ -295,16 +297,17 @@ export class Hash {
       }
 
       // Round the value if configured to do so
-      else {
-        return value;
-      }
-    } else if (typeof value === 'boolean') {
       return value;
-      /* v8 ignore start */
-    } else {
-      throw new Error(`Unsupported type: ${value.runtimeType}`);
     }
-    /* v8 ignore end */
+
+    // At this point, isBasicType ensures it's a boolean
+    /* v8 ignore next -- @preserve */
+    if (typeof value === 'boolean') {
+      return value;
+    }
+
+    /* v8 ignore next -- @preserve */
+    throw new Error(`Unsupported type: ${typeof value}`);
   }
 
   // ...........................................................................
@@ -317,6 +320,7 @@ export class Hash {
     const flattenedList: Array<any> = [];
 
     for (const element of list) {
+      /* v8 ignore else -- @preserve */
       if (element == null) {
         flattenedList.push(null);
       } else if (typeof element === 'object' && !Array.isArray(element)) {

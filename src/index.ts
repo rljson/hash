@@ -6,5 +6,6 @@
 
 export * from './apply-config.ts';
 export * from './float-rep.ts';
+export * from './hash-buffer.ts';
 export * from './hash-config.ts';
 export * from './hash.ts';

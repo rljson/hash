@@ -2,6 +2,7 @@ import { Json } from '@rljson/json';
 
 import { Hash, hip, hsh } from './index.ts';
 
+/* v8 ignore file -- @preserve */
 /**
  * The example function demonstrates how to use rljson/hash
  */
@@ -46,7 +47,7 @@ export const example = () => {
   json = { a: 1, b: 2, _hash: '' };
 
   hip(json);
-  assert(json._hash, 'QyWM_3g_5wNtikMDP4MK38');
+  assert(json._hash == 'QyWM_3g_5wNtikMDP4MK38');
 
   // .............................................................................
   print(
