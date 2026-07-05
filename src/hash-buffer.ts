@@ -3,11 +3,8 @@
 //
 // Use of this source code is governed by terms that can be
 // found in the LICENSE file in the root of this package.
-import { Sha256 } from '@aws-crypto/sha256-js';
-
-import { fromUint8Array } from 'js-base64';
-
 import { HashConfig } from './hash-config.ts';
+import { sha256Base64UrlOfBytes } from './sha256.ts';
 
 // .............................................................................
 /**
@@ -39,16 +36,7 @@ export class HashBuffer {
    * @returns The calculated hash as a base64 URL-safe string.
    */
   hash(data: Buffer | Uint8Array): string {
-    const hash = new Sha256();
-    hash.update(data);
-    const bytes = hash.digestSync();
-    const urlSafe = true;
-    const base64 = fromUint8Array(bytes, urlSafe).substring(
-      0,
-      this.config.hashLength,
-    );
-
-    return base64;
+    return sha256Base64UrlOfBytes(data, this.config.hashLength);
   }
 }
 

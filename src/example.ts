@@ -47,7 +47,7 @@ export const example = () => {
   json = { a: 1, b: 2, _hash: '' };
 
   hip(json);
-  assert(json._hash == 'QyWM_3g_5wNtikMDP4MK38');
+  assert(json._hash === 'QyWM_3g_5wNtikMDP4MK38');
 
   // .............................................................................
   print(
@@ -67,7 +67,7 @@ export const example = () => {
     updateExistingHashes: false,
     throwOnWrongHashes: false,
   }) as any;
-  assert(result._hash === 'cUSAvaoXAr3a7LojbHtVjE');
+  assert(result._hash === 'pos6bn6mON0sirhEaXq41-');
   assert(result.child._hash === 'yrqcsGrHfad4G4u9fgcAxY');
   assert(result.child2._hash === 'ABC123');
 

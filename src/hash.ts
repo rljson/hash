@@ -3,14 +3,26 @@
 //
 // Use of this source code is governed by terms that can be
 // found in the LICENSE file in the root of this package.
-import { Sha256 } from '@aws-crypto/sha256-js';
 import { copy, isBasicType, Json, JsonArray, JsonValue } from '@rljson/json';
-
-import { fromUint8Array } from 'js-base64';
 
 import { ApplyConfig, defaultApplyConfig } from './apply-config.ts';
 import { floatRep } from './float-rep.ts';
 import { HashConfig } from './hash-config.ts';
+import { sha256Base64Url } from './sha256.ts';
+
+// .............................................................................
+/**
+ * State shared across one apply run.
+ */
+interface _ApplyState {
+  /**
+   * True if the result still needs a full validation run: either objects
+   * with existing hashes were skipped because updateExistingHashes is
+   * false, or an empty hash was written (hashLength <= 0). All other
+   * hashes are correct by construction.
+   */
+  needsValidation: boolean;
+}
 
 // .............................................................................
 /**
@@ -45,10 +57,21 @@ export class Hash {
   apply<T extends Json>(json: T, applyConfig?: ApplyConfig): T {
     applyConfig = applyConfig ?? defaultApplyConfig();
     json = applyConfig.inPlace ? json : copy(json);
-    this._addHashesToObject(json, applyConfig);
+    const state: _ApplyState = { needsValidation: false };
+    this._addHashesToObject(json, applyConfig, state);
 
+    // Freshly written hashes are correct by construction and were already
+    // verified inline. A full validation run is only needed when objects
+    // with existing hashes were skipped or empty hashes were written.
     if (applyConfig.throwOnWrongHashes) {
-      this.validate(json as Json);
+      if (state.needsValidation) {
+        this.validate(json as Json);
+      } else if (applyConfig.inPlace) {
+        // Reject values @rljson/json cannot copy. In the non-in-place case
+        // the copy above already did; in the in-place case the copy inside
+        // validate used to.
+        Hash._checkCopyable(json);
+      }
     }
     return json;
   }
@@ -156,7 +179,6 @@ export class Hash {
     // Check the hashes of the child elements
     for (const [key, value] of Object.entries(jsonIs)) {
       if (key === '_hash') continue;
-      /* v8 ignore else -- @preserve */
       if (
         value !== null &&
         typeof value === 'object' &&
@@ -192,16 +214,7 @@ export class Hash {
 
   // ...........................................................................
   private _calcStringHash(string: string): string {
-    const hash = new Sha256();
-    hash.update(string);
-    const bytes = hash.digestSync();
-    const urlSafe = true;
-    const base64 = fromUint8Array(bytes, urlSafe).substring(
-      0,
-      this.config.hashLength,
-    );
-
-    return base64;
+    return sha256Base64Url(string, this.config.hashLength);
   }
 
   // ...........................................................................
@@ -216,58 +229,90 @@ export class Hash {
    * Recursively adds hashes to a nested object.
    * @param obj - The object to add hashes to.
    * @param applyConfig - Whether to process recursively.
+   * @param state - State shared across the apply run.
    */
   private _addHashesToObject(
     obj: Record<string, JsonValue | null | undefined>,
     applyConfig: ApplyConfig,
+    state: _ApplyState,
   ): void {
     const updateExisting = applyConfig.updateExistingHashes;
     const throwOnWrongHashes = applyConfig.throwOnWrongHashes;
 
     const existingHash = obj['_hash'];
     if (!updateExisting && existingHash) {
+      state.needsValidation = true;
       return;
     }
 
+    const keys = Object.keys(obj);
+
     // Recursively process child elements
-    for (const [, value] of Object.entries(obj)) {
-      if (
-        value !== null &&
-        typeof value === 'object' &&
-        !Array.isArray(value)
-      ) {
-        const existingHash = value['_hash'];
-        if (existingHash && !updateExisting) {
-          continue;
+    for (const key of keys) {
+      const value = obj[key];
+      if (value !== null && typeof value === 'object') {
+        if (Array.isArray(value)) {
+          this._processList(value, applyConfig, state);
+        } else {
+          this._addHashesToObject(value, applyConfig, state);
         }
-
-        this._addHashesToObject(value, applyConfig);
-      } else if (Array.isArray(value)) {
-        this._processList(value, applyConfig);
       }
     }
 
-    // Build a new object to represent the current object for hashing
-    const objToHash: Record<string, any> = {};
-
-    for (const [key, value] of Object.entries(obj)) {
+    // Reject NaN values before encoding anything
+    for (const key of keys) {
       if (key === '_hash') continue;
-      /* v8 ignore else -- @preserve */
-      if (value === null) {
-        // Treat null as not existing
-      } else if (typeof value === 'object' && !Array.isArray(value)) {
-        objToHash[key] = value['_hash'];
+      const value = obj[key];
+      if (typeof value === 'number') {
+        Hash._checkNumber(value);
       } else if (Array.isArray(value)) {
-        objToHash[key] = this._flattenList(value);
-      } else if (isBasicType(value)) {
-        objToHash[key] = this._checkBasicType(value);
+        Hash._checkNumbersInList(value);
       }
     }
 
-    const sortedMapJson = Hash._jsonString(objToHash);
+    // Build the canonical JSON representation of the current object,
+    // with child objects replaced by their hashes and keys sorted.
+    // "__proto__" keys are not part of the hash: assigning them to a plain
+    // object silently sets its prototype, so they have always been dropped.
+    keys.sort();
+    let json = '{';
+    let first = true;
+    for (const key of keys) {
+      if (key === '_hash' || key === '__proto__') continue;
+      const value = obj[key];
+
+      let encoded: string;
+      if (value === null || value === undefined) {
+        // Treat null as not existing
+        continue;
+      } else if (typeof value === 'string') {
+        encoded = Hash._encodeString(value);
+      } else if (typeof value === 'number') {
+        encoded = floatRep(value);
+      } else if (typeof value === 'boolean') {
+        encoded = value ? 'true' : 'false';
+      } else if (Array.isArray(value)) {
+        encoded = Hash._encodeList(value);
+      } else if (typeof value === 'object') {
+        encoded = Hash._encodeAnyValue((value as Json)['_hash']);
+      } else {
+        // Values of other types (e.g. functions) are not part of the hash
+        continue;
+      }
+
+      json += first ? '"' : ',"';
+      json += key;
+      json += '":';
+      json += encoded;
+      first = false;
+    }
+    json += '}';
 
     // Compute the SHA-256 hash of the JSON string
-    const hash = this.calcHash(sortedMapJson);
+    const hash = this._calcStringHash(json);
+    if (hash === '') {
+      state.needsValidation = true;
+    }
 
     // Throw if old and new hash do not match
     if (throwOnWrongHashes) {
@@ -285,54 +330,129 @@ export class Hash {
   }
 
   // ...........................................................................
-  /// Converts a basic type to a suitable representation.
-  private _checkBasicType(value: any): any {
-    if (typeof value === 'string') {
-      return value;
+  /// Throws if a number is not supported.
+  private static _checkNumber(value: number): void {
+    if (Number.isNaN(value)) {
+      throw new Error('NaN is not supported.');
     }
+  }
 
-    if (typeof value === 'number') {
-      if (Number.isNaN(value)) {
-        throw new Error('NaN is not supported.');
+  // ...........................................................................
+  /// Recursively rejects NaN values in a list.
+  private static _checkNumbersInList(list: Array<any>): void {
+    for (const element of list) {
+      if (typeof element === 'number') {
+        Hash._checkNumber(element);
+      } else if (Array.isArray(element)) {
+        Hash._checkNumbersInList(element);
       }
-
-      // Round the value if configured to do so
-      return value;
     }
+  }
 
-    // At this point, isBasicType ensures it's a boolean
-    /* v8 ignore next -- @preserve */
-    if (typeof value === 'boolean') {
-      return value;
-    }
-
-    /* v8 ignore next -- @preserve */
-    throw new Error(`Unsupported type: ${typeof value}`);
+  // ...........................................................................
+  /// Encodes a string value for the canonical JSON representation.
+  private static _encodeString(value: string): string {
+    return value.indexOf('"') < 0
+      ? '"' + value + '"'
+      : '"' + value.replace(/"/g, '\\"') + '"'; // Escape quotes
   }
 
   // ...........................................................................
   /**
-   * Builds a representation of a list for hashing.
-   * @param list - The list to flatten.
-   * @returns The flattened list.
+   * Builds the canonical representation of a list for hashing.
+   * Child objects must already carry their hashes.
+   * @param list - The list to encode.
+   * @returns The canonical JSON representation of the list.
    */
-  private _flattenList(list: Array<any>): Array<any> {
-    const flattenedList: Array<any> = [];
-
+  private static _encodeList(list: Array<any>): string {
+    let result = '[';
+    let first = true;
     for (const element of list) {
-      /* v8 ignore else -- @preserve */
-      if (element == null) {
-        flattenedList.push(null);
-      } else if (typeof element === 'object' && !Array.isArray(element)) {
-        flattenedList.push(element['_hash']);
+      let encoded: string;
+      if (element === null || element === undefined) {
+        encoded = 'null';
+      } else if (typeof element === 'string') {
+        encoded = Hash._encodeString(element);
+      } else if (typeof element === 'number') {
+        encoded = floatRep(element);
+      } else if (typeof element === 'boolean') {
+        encoded = element ? 'true' : 'false';
       } else if (Array.isArray(element)) {
-        flattenedList.push(this._flattenList(element));
-      } else if (isBasicType(element)) {
-        flattenedList.push(this._checkBasicType(element));
+        encoded = Hash._encodeList(element);
+      } else if (typeof element === 'object') {
+        encoded = Hash._encodeAnyValue(element['_hash']);
+      } else {
+        // Values of other types (e.g. functions) are not part of the hash
+        continue;
+      }
+      result += first ? encoded : ',' + encoded;
+      first = false;
+    }
+    return result + ']';
+  }
+
+  // ...........................................................................
+  /// Encodes an arbitrary value for the canonical JSON representation.
+  private static _encodeAnyValue(value: any): string {
+    if (value == null) {
+      return 'null';
+    } else if (typeof value === 'string') {
+      return Hash._encodeString(value);
+    } else if (typeof value === 'number') {
+      return floatRep(value);
+    } else if (typeof value === 'boolean') {
+      return value ? 'true' : 'false';
+    } else if (Array.isArray(value)) {
+      // map skips holes of sparse arrays while join keeps them empty
+      return `[${value.map((v) => Hash._encodeAnyValue(v)).join(',')}]`;
+    } else if (value.constructor === Object) {
+      return Hash._jsonString(value);
+    } else {
+      throw new Error(`Unsupported type: ${typeof value}`);
+    }
+  }
+
+  // ...........................................................................
+  /**
+   * Throws for values that `copy` of `@rljson/json` cannot copy, in the same
+   * order and with the same messages as `copy` does. Used to preserve the
+   * validation the previous implementation performed as a side effect of
+   * deep-copying the JSON during re-validation.
+   * @param json - The object to check.
+   */
+  private static _checkCopyable(json: Json): void {
+    for (const key of Object.keys(json)) {
+      const value = (json as Record<string, any>)[key];
+      if (value === null || value === undefined) {
+        continue;
+      } else if (Array.isArray(value)) {
+        Hash._checkListCopyable(value);
+      } else if (isBasicType(value)) {
+        continue;
+      } else if (value.constructor === Object) {
+        Hash._checkCopyable(value);
+      } else {
+        throw new Error(`Unsupported type: ${typeof value}`);
       }
     }
+  }
 
-    return flattenedList;
+  // ...........................................................................
+  /// List part of _checkCopyable, mirroring copyList of @rljson/json.
+  private static _checkListCopyable(list: Array<any>): void {
+    for (const element of list) {
+      if (element === null || element === undefined) {
+        continue;
+      } else if (Array.isArray(element)) {
+        Hash._checkListCopyable(element);
+      } else if (isBasicType(element)) {
+        continue;
+      } else if (element.constructor === Object) {
+        Hash._checkCopyable(element);
+      } else {
+        throw new Error(`Unsupported type: ${typeof element}`);
+      }
+    }
   }
 
   // ...........................................................................
@@ -340,15 +460,20 @@ export class Hash {
    * Recursively processes a list, adding hashes to nested objects and lists.
    * @param list - The list to process.
    * @param applyConfig - Whether to process recursively.
+   * @param state - State shared across the apply run.
    */
-  private _processList(list: Array<any>, applyConfig: ApplyConfig): void {
+  private _processList(
+    list: Array<any>,
+    applyConfig: ApplyConfig,
+    state: _ApplyState,
+  ): void {
     for (const element of list) {
       if (element === null) {
         continue;
       } else if (typeof element === 'object' && !Array.isArray(element)) {
-        this._addHashesToObject(element, applyConfig);
+        this._addHashesToObject(element, applyConfig, state);
       } else if (Array.isArray(element)) {
-        this._processList(element, applyConfig);
+        this._processList(element, applyConfig, state);
       }
     }
   }
@@ -363,35 +488,13 @@ export class Hash {
     // Sort the object keys to ensure consistent key order
     const sortedKeys = Object.keys(map).sort();
 
-    const encodeValue = (value: any): string => {
-      if (value == null) {
-        return 'null';
-      } else if (typeof value === 'string') {
-        return `"${value.replace(/"/g, '\\"')}"`; // Escape quotes
-      } else if (typeof value === 'number') {
-        return floatRep(value);
-      } else if (typeof value === 'boolean') {
-        return value ? 'true' : 'false';
-      } else if (Array.isArray(value)) {
-        return `[${value.map(encodeValue).join(',')}]`;
-      } else if (value.constructor === Object) {
-        return Hash._jsonString(value);
-      } else {
-        throw new Error(`Unsupported type: ${typeof value}`);
-      }
-    };
-
-    const result: string[] = [];
-    result.push('{');
+    let result = '{';
     for (let i = 0; i < sortedKeys.length; i++) {
       const key = sortedKeys[i];
-      const isLast = i == sortedKeys.length - 1;
-      result.push(`"${key}":` + `${encodeValue(map[key])}`);
-      if (!isLast) result.push(',');
+      if (i > 0) result += ',';
+      result += '"' + key + '":' + Hash._encodeAnyValue(map[key]);
     }
-    result.push('}');
-
-    return result.join('');
+    return result + '}';
   }
 }
 

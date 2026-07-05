@@ -8,7 +8,7 @@ import { Json } from '@rljson/json';
 
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { floatRep, maxFloat, minFloat } from '../src';
+import { floatRep, HashConfig, maxFloat, minFloat } from '../src';
 import { defaultApplyConfig } from '../src/apply-config';
 import { Hash, hip, hsh, rmhsh } from '../src/hash';
 
@@ -1100,6 +1100,108 @@ describe('Hash', () => {
         });
 
         expect(json['_hash']).toBe('W4CAuZT_tIicr6crbn6LA8');
+      });
+
+      it('validates hashed arrays containing null elements', () => {
+        const json = jh.apply({ a: [{ b: 1 }, null, 2] });
+        expect(() => jh.validate(json)).not.toThrow();
+      });
+
+      it('hashes true and false booleans', () => {
+        const json = jh.apply({ t: true, f: false });
+        expect((json as any)._hash).toBe('wihIxHQm_PTSflVXPCLx0j');
+      });
+
+      it('encodes sparse arrays with empty slots in jsonString', () => {
+        const sparse = new Array(3);
+        sparse[0] = 1;
+        sparse[2] = 3;
+        expect(Hash.jsonString({ a: sparse })).toBe('{"a":[1,,3]}');
+      });
+
+      it('encodes null values in jsonString', () => {
+        expect(Hash.jsonString({ a: null, b: 1 })).toBe('{"a":null,"b":1}');
+      });
+
+      it('escapes double quotes in string values', () => {
+        expect(Hash.jsonString({ a: 'x"y' })).toBe('{"a":"x\\"y"}');
+        const json = jh.apply({ a: 'say "hello"' });
+        expect((json as any)._hash).toBe('ZLYcwmiXwoeVH8oLoa-HAB');
+      });
+
+      it('hashes booleans in arrays', () => {
+        const json = jh.apply({ l: [true, false] });
+        expect((json as any)._hash).toBe('xNNbIUAOsM3aavUGJQEIZh');
+      });
+
+      it('does not include __proto__ keys in the hash', () => {
+        // Assigning a __proto__ key to a plain object silently sets its
+        // prototype, so such keys have never been part of the hash.
+        expect(jh.applyToJsonString('{"__proto__":{"a":1},"b":2}')).toBe(
+          '{"__proto__":{"a":1,"_hash":"AVq9f1zFei3ZS3WQ8ErYCE"},' +
+            '"b":2,"_hash":"CrGm05TNMBlfBkK2euEYDD"}',
+        );
+        expect(jh.applyToJsonString('{"__proto__":5,"a":1}')).toBe(
+          '{"__proto__":5,"a":1,"_hash":"AVq9f1zFei3ZS3WQ8ErYCE"}',
+        );
+      });
+
+      it('throws "Hash is missing." when the hash length is zero', () => {
+        const shortHash = new Hash(new HashConfig(0));
+        let message = '';
+        try {
+          shortHash.apply({ a: 1 });
+        } catch (e: unknown) {
+          message = (e as Error).message;
+        }
+        expect(message).toBe('Hash is missing.');
+      });
+
+      describe('rejects values @rljson/json cannot copy also in place', () => {
+        it('functions', () => {
+          expect(() => hip({ a: 1, fn: (() => 1) as any })).toThrow(
+            'Unsupported type: function',
+          );
+        });
+
+        it('bigints, also nested in lists', () => {
+          expect(() => hip({ b: 10n as any })).toThrow(
+            'Unsupported type: bigint',
+          );
+          expect(() =>
+            hip({ list: [1, 'a', [null, undefined, 10n]] as any }),
+          ).toThrow('Unsupported type: bigint');
+        });
+
+        it('symbols', () => {
+          expect(() => hip({ s: Symbol('x') as any })).toThrow(
+            'Unsupported type: symbol',
+          );
+          expect(() => hip({ l: [Symbol('x')] as any })).toThrow(
+            'Unsupported type: symbol',
+          );
+        });
+
+        it('non-plain objects like dates', () => {
+          expect(() => hip({ d: new Date(0) as any })).toThrow(
+            'Unsupported type: object',
+          );
+        });
+
+        it('objects with a shadowing constructor key', () => {
+          expect(() =>
+            jh.applyToJsonString('{"a":{"constructor":null}}'),
+          ).toThrow('Unsupported type: object');
+        });
+
+        it('but accepts all JSON types', () => {
+          const json = hip({
+            n: null,
+            u: undefined as any,
+            mixed: [null, { a: 1 }, [2], 'x', true],
+          });
+          expect((json as any)._hash).not.toBe('');
+        });
       });
     });
   });
