@@ -78,7 +78,7 @@ git commit -am"Increase version"
 ## Run tests and build
 
 ```bash
-npm run build
+pnpm run build
 ```
 
 ## Rebase main
@@ -96,7 +96,7 @@ node scripts/push-branch.js
 ## Create a pull request
 
 ```bash
-gh pr create --base main --title "Improve hash calc performance by 6 to 9 --body " "
+gh pr create --base main --title "Improve hash calc performance by 6 to 9" --body " "
 ```
 
 ## Code review
