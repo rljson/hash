@@ -21,9 +21,6 @@ export function floatRep(value: number): string {
     return value.toString();
   }
 
-  let digits = 2;
-  let factor = precision;
-
   if (value > maxFloat || value < minFloat) {
     throw Error(
       `Float value ${value} must be between ${minFloat} and ${maxFloat}.`,
@@ -32,23 +29,30 @@ export function floatRep(value: number): string {
 
   const absVal = Math.abs(value);
 
-  // Define thresholds and corresponding digits/factors
-  const thresholds = [
-    { limit: 10, digits: 8, factor: 1e8 },
-    { limit: 100, digits: 7, factor: 1e7 },
-    { limit: 1000, digits: 6, factor: 1e6 },
-    { limit: 10000, digits: 5, factor: 1e5 },
-    { limit: 100000, digits: 4, factor: 1e4 },
-    { limit: 1000000, digits: 3, factor: 1e3 },
-    { limit: 10000000, digits: 2, factor: 1e2 },
-  ];
-
-  for (const { limit, digits: d, factor: f } of thresholds) {
-    if (absVal < limit) {
-      digits = d;
-      factor = f;
-      break;
-    }
+  // The precision decreases as the absolute value increases
+  let digits: number;
+  let factor: number;
+  if (absVal < 10) {
+    digits = 8;
+    factor = 1e8;
+  } else if (absVal < 100) {
+    digits = 7;
+    factor = 1e7;
+  } else if (absVal < 1000) {
+    digits = 6;
+    factor = 1e6;
+  } else if (absVal < 10000) {
+    digits = 5;
+    factor = 1e5;
+  } else if (absVal < 100000) {
+    digits = 4;
+    factor = 1e4;
+  } else if (absVal < 1000000) {
+    digits = 3;
+    factor = 1e3;
+  } else {
+    digits = 2;
+    factor = precision;
   }
 
   const rounded = Math.round(absVal * factor);
