@@ -33,13 +33,13 @@ git pull
 
 ## Set pull request title
 
-Replace `Treat null values as undefined when hashing ` here and below
+Replace `Improve hash calc performance by 6 to 9` here and below
 by your new pull request title.
 
 ## Create a feature branch
 
 ```bash
-node scripts/create-branch.js "Treat null values as undefined when hashing"
+node scripts/create-branch.js "Improve hash calc performance by 6 to 9"
 ```
 
 ## Update dependencies
@@ -65,7 +65,7 @@ In Vscode, press
 
 ```bash
 git add .
-git commit -am"Treat null values as undefined when hashing"
+git commit -am"Improve hash calc performance by 6 to 9"
 ```
 
 ## Increase version
@@ -78,7 +78,7 @@ git commit -am"Increase version"
 ## Run tests and build
 
 ```bash
-npm run build
+pnpm run build
 ```
 
 ## Rebase main
@@ -96,7 +96,7 @@ node scripts/push-branch.js
 ## Create a pull request
 
 ```bash
-gh pr create --base main --title "Treat null values as undefined when hashing" --body " "
+gh pr create --base main --title "Improve hash calc performance by 6 to 9" --body " "
 ```
 
 ## Code review

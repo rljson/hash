@@ -16,7 +16,7 @@ export default defineConfig({
       formats: ['es'],
     },
     rollupOptions: {
-      external: ['js-base64', '@aws-crypto/sha256-js', '@rljson/json'],
+      external: ['@rljson/json'],
       output: {
         globals: {},
       },
