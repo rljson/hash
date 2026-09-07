@@ -27,7 +27,9 @@
     "updateGoldens": "cross-env UPDATE_GOLDENS=true npm test"
   },
   "devDependencies": {
+    "@rljson/dna-rljson": "^0.2.0",
     "@tssuite/golden": "^1.0.0",
+    "@tssuite/helix-js": "^0.2.1",
     "@types/node": "^26.1.0",
     "@typescript-eslint/eslint-plugin": "^8.62.1",
     "@typescript-eslint/parser": "^8.62.1",
