@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@rljson/dna-rljson': link:../dna_rljson
+
 importers:
 
   .:
@@ -12,9 +15,15 @@ importers:
         specifier: ^0.0.23
         version: 0.0.23
     devDependencies:
+      '@rljson/dna-rljson':
+        specifier: link:../dna_rljson
+        version: link:../dna_rljson
       '@tssuite/golden':
         specifier: ^1.0.0
         version: 1.0.0(@rljson/json@0.0.23)(@tssuite/project-root@0.0.17)
+      '@tssuite/helix-js':
+        specifier: ^0.5.1
+        version: 0.5.1
       '@types/node':
         specifier: ^26.1.0
         version: 26.1.0
@@ -322,6 +331,10 @@ packages:
     peerDependencies:
       '@rljson/json': ^0.0.21
       '@tssuite/project-root': 0.0.17
+
+  '@tssuite/helix-js@0.5.1':
+    resolution: {integrity: sha512-8i4zsO3uu3i9O8Ns5hFLVAtd3K4QiBP5v7QP7+s0an9idfC8KDt7AvuZkSZ2nh6iD5NKWN2f3ydRpblLFpv8pA==}
+    engines: {node: '>=22'}
 
   '@tssuite/project-root@0.0.17':
     resolution: {integrity: sha512-q076C56RTosctzH2PttSVo+jyZyMe7O4DB2RzKvYZOf0zqvvRo6S33qMvLdeznBUb1znsnygYUgakQ+gg/K5EA==}
@@ -1551,6 +1564,8 @@ snapshots:
     dependencies:
       '@rljson/json': 0.0.23
       '@tssuite/project-root': 0.0.17
+
+  '@tssuite/helix-js@0.5.1': {}
 
   '@tssuite/project-root@0.0.17': {}
 
