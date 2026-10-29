@@ -32,3 +32,7 @@ Thumbs.db
 
 # Other
 *.lock  # (Optional: for ignoring package-lock.json or yarn.lock if you don't want to version them)
+
+# gg
+.gg/*
+!.gg/gg.json

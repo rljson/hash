@@ -1,2 +1,6 @@
 allowBuilds:
   esbuild: true
+minimumReleaseAgeExclude:
+  - '@rljson/*'
+overrides:
+  "@rljson\/dna-rljson": link:../dna_rljson
