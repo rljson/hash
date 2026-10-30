@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+
+### Developed in gg tickets
+
+- **Developed in gg tickets.** The repo carries the rljson DNA (`@rljson/dna-rljson`): gg's `/gg-*` skills, the guides and the quick check (`.github/workflows/quick_check.yaml`).
+- **Pull requests are checked by the quick check** (`gg one did commit`: every commit went through gg's local lint, tests and coverage). `Build and Test` runs on `main` after the merge.
+- **vitest also runs `test/**/*.test.ts`,** where gg's release writes the version test.
+- **`minimumReleaseAgeExclude: ['@rljson/*']`:** pnpm 11 holds back packages younger than a day, and a release of the chain installs versions published minutes earlier.
+- **Dependencies raised to their newest versions** (TypeScript 6 among them).
+
 ## [0.0.17]
 
 - BREAKING CHANGES:

@@ -1,2 +1,5 @@
 allowBuilds:
   esbuild: true
+minimumReleaseAgeExclude:
+  - '@rljson/*'
+  - '@ggdna/dna-gg@1.1.1'
