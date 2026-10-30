@@ -1,6 +1,6 @@
 {
   "name": "@rljson/hash",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "Deeply apply hashes to JSON data",
   "homepage": "https://github.com/rljson/hash",
   "bugs": "https://github.com/rljson/hash/issues",
@@ -27,7 +27,7 @@
     "updateGoldens": "cross-env UPDATE_GOLDENS=true npm test"
   },
   "devDependencies": {
-    "@rljson/dna-rljson": "^0.3.1",
+    "@rljson/dna-rljson": "^0.3.2",
     "@tssuite/golden": "^1.0.1",
     "@tssuite/helix-js": "^0.5.1",
     "@types/node": "^26.6.6",

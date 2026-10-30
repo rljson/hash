@@ -2,4 +2,4 @@
 // Kept in sync by test/hash_version.spec.ts.
 
 /** The version of the `@rljson/hash` package. */
-export const hashVersion = '0.0.20';
+export const hashVersion = '0.0.21';
