@@ -1,0 +1,44 @@
+// @license
+// Copyright (c) rljson
+//
+// Use of this source code is governed by terms that can be
+// found in the LICENSE file in the root of this package.
+
+{
+  // The package name, as declared in pubspec.yaml / package.json.
+  "name": "@rljson/hash",
+
+  // 1-2 sentence summary about this repo.
+  "summary": "Deep hashing of JSON: writes a SHA-256 _hash (base64url, 22 chars by default) into every object and checks existing ones; hashes of byte buffers. API: hsh, hip (in place), rmhsh, Hash, HashConfig, hshBuffer, floatRep.",
+
+  // 1-3 bullet points: the problem space.
+  "domain": [
+    "content-addressed ids for JSON rows and tables",
+    "existing hashes: update, keep, throw on wrong (ApplyConfig)",
+    "same hash for close floats (floatRep), hash length (HashConfig)"
+  ],
+
+  // The repos this one depends on and the repos depending on it.
+  // Keep the reason or the API behind each entry, not just the name.
+  "interfaces": {
+    // "<repo-a>": "why / API"
+    "uses": {
+      "json": "Json types, copy"
+    },
+
+    // "<repo-b>": "why / API"
+    "usedBy": {
+      "rljson": "hip/hsh to hash rows and tables",
+      "io": "hip/hsh: rows, tables, tableCfgs",
+      "io-sqlite-node": "hip/hsh: written rows, tableCfgs",
+      "io-mssql": "hip/hsh: written rows, tableCfgs",
+      "db": "hip/hsh/rmhsh: rows, inserts, edits",
+      "converter": "hip/hsh: tables, composite and fallback sliceIds",
+      "bs": "test: ids agree with hshBuffer",
+      "fs-agent": "tree hashing",
+      "mongo-agent": "hip: components, edit rows",
+      "webcache": "hip: the table config",
+      "edge": "hsh/hip to hash rows and tables"
+    }
+  }
+}
