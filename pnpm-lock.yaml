@@ -19,8 +19,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1(@rljson/json@0.0.23)(@tssuite/project-root@0.0.17)
       '@tssuite/helix-js':
-        specifier: ^0.7.0
-        version: 0.7.0
+        specifier: ^0.8.0
+        version: 0.8.0
       '@types/node':
         specifier: ^26.6.11
         version: 26.6.11
@@ -404,8 +404,8 @@ packages:
       '@rljson/json': ^0.0.21
       '@tssuite/project-root': 0.0.17
 
-  '@tssuite/helix-js@0.7.0':
-    resolution: {integrity: sha512-g80nPLJc2bkKohGSF8NkqzFY1TeAqi2ZUf/IUjOdOfFg1or9HIBztcsL7WYT/sPthmWy/pWqBYlrYNLAW6kAqQ==}
+  '@tssuite/helix-js@0.8.0':
+    resolution: {integrity: sha512-5TltI0pkX41R5Xa9ejX4ypVICP0hGu+1f+bWX9gKRgoMs/NYi4yIl0hDfvXGk725Da2l0XBmobmC2ggjh0lQiA==}
     engines: {node: '>=22'}
 
   '@tssuite/project-root@0.0.17':
@@ -1746,7 +1746,7 @@ snapshots:
       '@rljson/json': 0.0.23
       '@tssuite/project-root': 0.0.17
 
-  '@tssuite/helix-js@0.7.0': {}
+  '@tssuite/helix-js@0.8.0': {}
 
   '@tssuite/project-root@0.0.17': {}
 
